@@ -1,0 +1,54 @@
+<div class="article-detail-container" *ngIf="!articleLoaded">
+  <mat-card>
+    <mat-card-content>
+      <p>Loading...</p>
+    </mat-card-content>
+  </mat-card>
+</div>
+<div class="article-detail-container" *ngIf="articleLoaded">
+  <mat-card class="article-content">
+    <mat-card-content>
+      <div *ngIf="errorMessage; else detailTemplate">
+        <p class="error-message">{{ errorMessage }}</p>
+      </div>
+      <ng-template #detailTemplate>
+        <div *ngIf="article">
+          <h2>{{ article.title }}</h2>
+          <h3>{{ article.description }}</h3>
+          <div [innerHTML]="article.content"></div>
+        </div>
+<!--        <h2>Submitted Article</h2>-->
+<!--        <div *ngIf="isAdmin && latestSubmittedArticle">-->
+<!--          <h3>{{ latestSubmittedArticle.title }}</h3>-->
+<!--          <h3>{{ latestSubmittedArticle.description }}</h3>-->
+<!--          <div [innerHTML]="latestSubmittedArticle.content"></div>-->
+<!--        </div>-->
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+  <div class="article-actions">
+    <mat-card class="actions-card">
+      <mat-card-content>
+        <mat-form-field appearance="fill" class="version-select">
+          <mat-label>Version</mat-label>
+          <mat-select [(value)]="selectedVersion" (selectionChange)="onVersionChange($event.value)">
+            <mat-option *ngFor="let version of versions" [value]="version.version">
+              Version {{ version.version }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" *ngIf="selectedVersion === latestVersion && !latestSubmittedArticle" [routerLink]="['/articles/edit', publicId, status]">Edit</button>
+        <ng-container *ngIf="isAdmin && (selectedVersion === latestVersion || latestSubmittedArticle)">
+          <ng-container *ngIf="!isArticleApproved(); else approvedTemplate">
+            <button mat-raised-button color="accent" (click)="approveArticle('APPROVED')">Approve</button>
+            <button mat-raised-button color="accent" (click)="approveArticle('EDITING')">Deny</button>
+            <span class="not-approved-label">Not Approved</span>
+          </ng-container>
+          <ng-template #approvedTemplate>
+            <div class="approved-label">Approved</div>
+          </ng-template>
+        </ng-container>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+.actions-card {
+  width: 100%;
+}
+
+.article-actions {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.article-content {
+  flex: 2;
+  margin-right: 20px;
+}
+
+.article-create-container {
+  display: flex;
+  margin: 20px;
+}
+
+button.cancel-button {
+  background-color: red;
+  color: white;
+}
+
+button.submit-button,
+button.cancel-button {
+  width: auto;
+  margin-right: 10px;
+}
+
+.error-message {
+  color: red;
+}
+
+.form-field {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+textarea#content {
+  min-height: 300px;
+}
+
+textarea#description {
+  min-height: 50px;
+}

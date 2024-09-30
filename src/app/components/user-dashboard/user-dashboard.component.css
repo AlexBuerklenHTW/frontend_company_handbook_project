@@ -1,0 +1,57 @@
+.user-dashboard-container {
+  margin: 20px;
+}
+
+.article-card {
+  flex: 3;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.article-card-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.article-description {
+  font-size: 14px;
+  color: gray;
+}
+
+.article-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.article-item {
+  margin-bottom: 15px;
+}
+
+.article-title {
+  font-size: 16px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.error-message {
+  color: red;
+}
+
+.mat-card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.mat-form-field {
+  flex: 1;
+}

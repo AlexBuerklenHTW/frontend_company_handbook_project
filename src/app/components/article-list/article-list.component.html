@@ -1,0 +1,52 @@
+<div class="article-list-container" *ngIf="!articlesLoaded">
+  <mat-card>
+    <mat-card-content>
+      <p>Loading...</p>
+    </mat-card-content>
+  </mat-card>
+</div>
+<div class="article-list-container" *ngIf="articlesLoaded">
+  <mat-card>
+    <mat-card-content>
+      <div *ngIf="errorMessage; else listTemplate">
+        <p class="error-message">{{ errorMessage }}</p>
+      </div>
+      <ng-template #listTemplate>
+        <div *ngIf="filterForm">
+          <form [formGroup]="filterForm" class="filter-form">
+            <mat-form-field>
+              <input matInput placeholder="Filter by title" formControlName="title">
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput placeholder="Filter by description" formControlName="description">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-select placeholder="Sort by" formControlName="sortOrder">
+                <mat-option value="asc">Title A-Z</mat-option>
+                <mat-option value="desc">Title Z-A</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </form>
+        </div>
+        <div *ngIf="filteredArticles.length; else noArticlesTemplate">
+          <div class="article-item" *ngFor="let article of filteredArticles">
+            <mat-card class="article-card">
+              <mat-card-title>
+                <a [routerLink]="['/articles', article.publicId]" class="article-title">{{ article.title }}</a>
+              </mat-card-title>
+              <mat-card-subtitle class="article-description">
+                {{ article.description }}
+              </mat-card-subtitle>
+            </mat-card>
+          </div>
+        </div>
+        <ng-template #noArticlesTemplate>
+          <p>No articles found.</p>
+        </ng-template>
+      </ng-template>
+      <div class="create-button">
+        <button mat-raised-button color="primary" [routerLink]="['/articles/create']">Create New Article</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,38 @@
+.article-card {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.article-description {
+  font-size: 14px;
+  color: gray;
+}
+
+.article-item {
+  margin-bottom: 15px;
+}
+
+.article-list-container {
+  margin: 20px;
+}
+
+.article-title {
+  font-size: 16px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.create-button {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.error-message {
+  color: red;
+}
+
+.mat-card-content {
+  display: flex;
+  flex-direction: column;
+}

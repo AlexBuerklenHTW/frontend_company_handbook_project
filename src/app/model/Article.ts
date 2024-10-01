@@ -8,3 +8,4 @@ export interface ArticleDto {
   editedBy?: string;
   versions?: ArticleDto[];
 }
+

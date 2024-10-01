@@ -41,7 +41,6 @@ export class LoginComponent {
   onSubmit(): void {
     this.loading = true;
     const { username, password } = this.form;
-    console.log('Submitting login form:', this.form);
 
     this.authService.login(username, password).subscribe(
       (token: string) => {

@@ -28,7 +28,7 @@ import {StorageService} from "../../services/storage.service";
 })
 export class ArticleDetailComponent implements OnInit {
   article: ArticleDto | undefined;
-  versions: ArticleDto[] = [];
+  articleDto: ArticleDto[] = [];
   selectedVersion: number | undefined;
   errorMessage: string | null = null;
   articleLoaded: boolean = false;
@@ -37,6 +37,7 @@ export class ArticleDetailComponent implements OnInit {
   latestSubmittedArticle: ArticleDto | undefined;
   isAdmin: boolean = false;
   status: string = '';
+  version: number | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -76,19 +77,17 @@ export class ArticleDetailComponent implements OnInit {
           this.articleLoaded = true;
           return of([]);
         })
-      ).subscribe((versions: ArticleDto[]) => {
-        console.log(versions)
-        this.versions = versions.sort((a, b) => b.version! - a.version!);
+      ).subscribe((versionsOfArticleDto: ArticleDto[]) => {
+        this.articleDto = versionsOfArticleDto.sort((a, b) => b.version! - a.version!);
         if (!this.isAdmin) {
-          this.versions = this.versions.filter(version => version.status);
+          this.articleDto = this.articleDto.filter(version => version.status);
         }
-        if (this.versions.length > 0) {
-          this.latestVersion = this.versions[0].version;
-          this.status = this.versions[0].status;
-          console.log(this.status);
+        if (this.articleDto.length > 0) {
+          this.latestVersion = this.articleDto[0].version;
+          this.status = this.articleDto[0].status;
           if (!this.latestSubmittedArticle) {
             this.selectedVersion = this.latestVersion;
-            this.article = this.versions[0];
+            this.article = this.articleDto[0];
           }
         }
 
@@ -103,7 +102,7 @@ export class ArticleDetailComponent implements OnInit {
 
   onVersionChange(version: number): void {
     this.selectedVersion = version;
-    this.article = this.versions.find(v => v.version === version);
+    this.article = this.articleDto.find(v => v.version === version);
   }
 
   approveArticle(status: string): void {

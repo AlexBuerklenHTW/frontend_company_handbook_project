@@ -32,12 +32,12 @@
         <mat-form-field appearance="fill" class="version-select">
           <mat-label>Version</mat-label>
           <mat-select [(value)]="selectedVersion" (selectionChange)="onVersionChange($event.value)">
-            <mat-option *ngFor="let version of versions" [value]="version.version">
+            <mat-option *ngFor="let version of articleDto" [value]="version.version">
               Version {{ version.version }}
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <button mat-raised-button color="primary" *ngIf="selectedVersion === latestVersion && !latestSubmittedArticle" [routerLink]="['/articles/edit', publicId, status]">Edit</button>
+        <button mat-raised-button color="primary" *ngIf="selectedVersion === latestVersion && !latestSubmittedArticle" [routerLink]="['/articles/edit', publicId, status, latestVersion]">Edit</button>
         <ng-container *ngIf="isAdmin && (selectedVersion === latestVersion || latestSubmittedArticle)">
           <ng-container *ngIf="!isArticleApproved(); else approvedTemplate">
             <button mat-raised-button color="accent" (click)="approveArticle('APPROVED')">Approve</button>

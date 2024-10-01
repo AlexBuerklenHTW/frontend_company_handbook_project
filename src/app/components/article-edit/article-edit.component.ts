@@ -14,7 +14,6 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatError} from '@angular/material/form-field';
 import {EditorComponent} from "@tinymce/tinymce-angular";
 import {StorageService} from "../../services/storage.service";
-import {ArticleDetailComponent} from "../article-detail/article-detail.component";
 
 @Component({
   selector: 'app-article-edit',
@@ -35,11 +34,13 @@ import {ArticleDetailComponent} from "../article-detail/article-detail.component
 })
 export class ArticleEditComponent implements OnInit {
   articleForm: FormGroup;
-  publicId!: string; // Anpassung hier, um publicId zu verwenden
+  publicId!: string;
+  version: number | undefined;
   errorMessage: string | null = null;
   articleLoaded: boolean = false;
   private initialFormValue!: Partial<ArticleDto>;
   status!: string;
+  latestVersion!: number;
 
   init: EditorComponent['init'] = {
     base_url: '/tinymce',
@@ -64,7 +65,7 @@ export class ArticleEditComponent implements OnInit {
   ngOnInit(): void {
     this.publicId = this.route.snapshot.params['id'];
     this.status = this.route.snapshot.params['status'];
-    console.log(this.status);
+    this.latestVersion = this.route.snapshot.params['latestVersion'];
     if (this.status === 'APPROVED') {
       this.loadLatestArticle();
     }else{
@@ -75,7 +76,7 @@ export class ArticleEditComponent implements OnInit {
   loadLatestArticle(): void {
     const user = this.storageService.getUser();
     if (user) {
-      this.articleService.getLatestArticleByPublicIdAndStatus(this.publicId).pipe(
+      this.articleService.getLatestArticleByPublicIdAndVersion(this.publicId, this.latestVersion).pipe(
         catchError(error => {
           this.errorMessage = 'ID of Article not found';
           this.articleLoaded = true;
@@ -83,10 +84,8 @@ export class ArticleEditComponent implements OnInit {
         })
       ).subscribe((data: ArticleDto | null) => {
         if (data) {
-          console.log(data);
           this.articleForm.patchValue(data);
           this.initialFormValue = {...this.articleForm.value};
-          console.log(this.initialFormValue);
         } else {
           this.errorMessage = 'ID of Article not found';
         }
@@ -106,10 +105,8 @@ export class ArticleEditComponent implements OnInit {
         })
       ).subscribe((data: ArticleDto | null) => {
         if (data) {
-          console.log(data);
           this.articleForm.patchValue(data);
           this.initialFormValue = {...this.articleForm.value};
-          console.log(this.initialFormValue);
         } else {
           this.errorMessage = 'ID of Article not found';
         }
@@ -127,7 +124,6 @@ export class ArticleEditComponent implements OnInit {
     if (user && this.articleForm.valid) {
 
       const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: "EDITING"}; // Ensure publicId is included
-      console.log(updatedArticle);
       this.articleService.updateArticle(this.publicId, user.username, updatedArticle).subscribe(() => {
         this.router.navigate(['/user-dashboard']);
       });

@@ -29,7 +29,6 @@ export class ArticleService {
 
   getArticleVersionsByRole(publicId: string, role: string): Observable<ArticleDto[]> {
     const params = new HttpParams().set('role', role);
-    console.log(params);
     return this.http.get<ArticleDto[]>(`${this.apiUrl}/${publicId}/versions`, {params});
   }
 
@@ -54,8 +53,8 @@ export class ArticleService {
     return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/latest`, {params});
   }
 
-  getLatestArticleByPublicIdAndStatus(publicId: string): Observable<ArticleDto> {
-    return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/latestWithVersion`);
+  getLatestArticleByPublicIdAndVersion(publicId: string, version: number): Observable<ArticleDto> {
+    return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/latestWithVersion/${version}`);
   }
 
   getArticlesApproved(): Observable<ArticleDto[]> {

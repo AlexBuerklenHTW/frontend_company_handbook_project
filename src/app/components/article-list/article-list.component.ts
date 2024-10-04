@@ -63,6 +63,7 @@ export class ArticleListComponent implements OnInit {
       (data: ArticleDto[]) => {
         try {
           this.articles = this.getLatestVersions(data);
+          console.log(this.articles)
           this.filteredArticles = this.articles;
         } catch (error) {
           this.errorMessage = (error as Error).message;

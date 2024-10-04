@@ -28,7 +28,7 @@ import {StorageService} from "../../services/storage.service";
 })
 export class ArticleDetailComponent implements OnInit {
   article: ArticleDto | undefined;
-  articleDto: ArticleDto[] = [];
+  articles: ArticleDto[] = [];  // Artikel werden hier gespeichert
   selectedVersion: number | undefined;
   errorMessage: string | null = null;
   articleLoaded: boolean = false;
@@ -37,7 +37,7 @@ export class ArticleDetailComponent implements OnInit {
   latestSubmittedArticle: ArticleDto | undefined;
   isAdmin: boolean = false;
   status: string = '';
-  version: number | undefined;
+  version: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,53 +47,37 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.checkAdmin();
     this.publicId = this.route.snapshot.paramMap.get('id') || '';
-    if (this.isAdmin) {
-      this.loadLatestSubmittedArticle();
-    }
-    this.loadArticleVersionsForUserRole(this.publicId);
+    this.loadApprovedArticleByPublicIdAndLastVersion(this.publicId);
+    this.loadAllApprovedArticlesByPublicId(this.publicId);
   }
 
-  loadLatestSubmittedArticle(): void {
-    this.articleService.getLatestSubmittedArticle(this.publicId).pipe(
-      catchError(error => {
-        this.errorMessage = 'Error loading latest submitted article';
+  loadApprovedArticleByPublicIdAndLastVersion(publicId: string): void {
+    this.articleService.getApprovedArticleByPublicIdAndLastVersion(publicId).pipe(
+      catchError(() => {
+        this.errorMessage = 'Error loading latest approved article';
         this.articleLoaded = true;
         return of(undefined);
       })
     ).subscribe((article: ArticleDto | undefined) => {
-      this.latestSubmittedArticle = article;
+      if (article) {
+        this.article = article;
+        this.latestVersion = article.version;  // Speichere die neueste Version
+        this.selectedVersion = article.version;  // Setze die aktuell geladene Version als ausgewählt
+      } else {
+        this.errorMessage = 'No approved article found';
+      }
       this.articleLoaded = true;
     });
   }
 
-  loadArticleVersionsForUserRole(publicId: string): void {
-    const user = this.storageService.getUser();
-    if (user) {
-      this.articleService.getArticleVersionsByRole(publicId, user.role).pipe(
-        catchError(error => {
-          this.errorMessage = 'Error loading article versions';
-          this.articleLoaded = true;
-          return of([]);
-        })
-      ).subscribe((versionsOfArticleDto: ArticleDto[]) => {
-        this.articleDto = versionsOfArticleDto.sort((a, b) => b.version! - a.version!);
-        if (!this.isAdmin) {
-          this.articleDto = this.articleDto.filter(version => version.status);
-        }
-        if (this.articleDto.length > 0) {
-          this.latestVersion = this.articleDto[0].version;
-          this.status = this.articleDto[0].status;
-          if (!this.latestSubmittedArticle) {
-            this.selectedVersion = this.latestVersion;
-            this.article = this.articleDto[0];
-          }
-        }
 
-        this.articleLoaded = true;
-      });
-    }
+  loadAllApprovedArticlesByPublicId(publicId: string): void {
+    this.articleService.getAllApprovedArticlesByPublicId(publicId).subscribe((articles: ArticleDto[]) => {
+        console.log(articles);
+        this.articles = articles;  // Setze die Artikel in die Liste
+      }
+    )
   }
 
   isArticleApproved(): boolean {
@@ -102,23 +86,25 @@ export class ArticleDetailComponent implements OnInit {
 
   onVersionChange(version: number): void {
     this.selectedVersion = version;
-    this.article = this.articleDto.find(v => v.version === version);
+    // Finde den Artikel mit der ausgewählten Versionsnummer
+    this.article = this.articles.find(v => v.version === version);
   }
 
   approveArticle(status: string): void {
     const user = this.storageService.getUser();
     if (user) {
       const newVersion: number = this.latestVersion! + 1;
-      this.articleService.approveArticle(this.publicId, status, newVersion , user?.username).subscribe((article) => {
+      this.articleService.setApprovalStatus(this.publicId, status, newVersion, user?.username).subscribe((article) => {
         if (this.article) {
           this.article.status = article.status;
         }
-      }, error => {
+      }, () => {
         this.errorMessage = 'Error approving article';
       });
     }
   }
 
+  // need for admin
   checkAdmin(): void {
     const user = this.storageService.getUser();
     if (user) {

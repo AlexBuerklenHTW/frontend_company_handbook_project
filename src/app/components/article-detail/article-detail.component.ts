@@ -62,8 +62,9 @@ export class ArticleDetailComponent implements OnInit {
     ).subscribe((article: ArticleDto | undefined) => {
       if (article) {
         this.article = article;
-        this.latestVersion = article.version;  // Speichere die neueste Version
-        this.selectedVersion = article.version;  // Setze die aktuell geladene Version als ausgewählt
+        this.latestVersion = article.version;
+        this.selectedVersion = article.version;
+        this.status = article.status;
       } else {
         this.errorMessage = 'No approved article found';
       }
@@ -74,8 +75,7 @@ export class ArticleDetailComponent implements OnInit {
 
   loadAllApprovedArticlesByPublicId(publicId: string): void {
     this.articleService.getAllApprovedArticlesByPublicId(publicId).subscribe((articles: ArticleDto[]) => {
-        console.log(articles);
-        this.articles = articles;  // Setze die Artikel in die Liste
+        this.articles = articles;
       }
     )
   }
@@ -86,7 +86,6 @@ export class ArticleDetailComponent implements OnInit {
 
   onVersionChange(version: number): void {
     this.selectedVersion = version;
-    // Finde den Artikel mit der ausgewählten Versionsnummer
     this.article = this.articles.find(v => v.version === version);
   }
 

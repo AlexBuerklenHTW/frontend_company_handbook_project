@@ -35,7 +35,7 @@
         </mat-form-field>
 
         <button mat-raised-button color="primary" *ngIf="selectedVersion === latestVersion && !latestSubmittedArticle"
-                [routerLink]="['/articles/edit', publicId, status, latestVersion]">Edit</button>
+                [routerLink]="['/articles/edit', publicId, selectedVersion]">Edit</button>
 
         <ng-container *ngIf="isAdmin && (selectedVersion === latestVersion || latestSubmittedArticle)">
           <ng-container *ngIf="!isArticleApproved(); else approvedTemplate">

@@ -16,7 +16,7 @@ export const routes: Routes = [
   { path: 'articles', component: ArticleListComponent, canActivate: [RoleGuard] },
   { path: 'articles/create', component: ArticleCreateComponent, canActivate: [RoleGuard] },
   { path: 'articles/edit/:id', component: ArticleEditComponent, canActivate: [RoleGuard] },
-  { path: 'articles/edit/:id/:status/:latestVersion', component: ArticleEditComponent, canActivate: [RoleGuard] },
+  { path: 'articles/edit/:id/:selectedVersion', component: ArticleEditComponent, canActivate: [RoleGuard] },
   { path: 'articles/:id', component: ArticleDetailComponent, canActivate: [RoleGuard] },
   { path: 'user-dashboard', component: UserDashboardComponent, canActivate: [RoleGuard] },
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [RoleGuard], data: { role: 'ROLE_ADMIN' } },

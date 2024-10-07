@@ -39,8 +39,6 @@ export class ArticleEditComponent implements OnInit {
   errorMessage: string | null = null;
   articleLoaded: boolean = false;
   private initialFormValue!: Partial<ArticleDto>;
-  status!: string;
-  latestVersion!: number;
 
   init: EditorComponent['init'] = {
     base_url: '/tinymce',
@@ -64,25 +62,20 @@ export class ArticleEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.publicId = this.route.snapshot.params['id'];
-    this.status = this.route.snapshot.params['status'];
-    this.latestVersion = this.route.snapshot.params['latestVersion'];
-    if (this.status === 'APPROVED') {
-      this.loadLatestArticle();
-    }else{
-      this.loadLatestEditedArticle();
-    }
+    this.version = Number(this.route.snapshot.params['selectedVersion']);
+    this.loadLatestArticle(this.publicId, this.version);
   }
 
-  loadLatestArticle(): void {
+  loadLatestArticle(publicId: string, version: number): void {
     const user = this.storageService.getUser();
     if (user) {
-      this.articleService.getLatestArticleByPublicIdAndVersion(this.publicId, this.latestVersion).pipe(
-        catchError(error => {
+      this.articleService.getArticleByPublicIdAndVersion(publicId, version).pipe(
+        catchError(() => {
           this.errorMessage = 'ID of Article not found';
           this.articleLoaded = true;
           return of(null);
         })
-      ).subscribe((data: ArticleDto | null) => {
+      ).subscribe((data) => {
         if (data) {
           this.articleForm.patchValue(data);
           this.initialFormValue = {...this.articleForm.value};
@@ -93,27 +86,28 @@ export class ArticleEditComponent implements OnInit {
       });
     }
   }
-
-  loadLatestEditedArticle(): void {
-    const user = this.storageService.getUser();
-    if (user) {
-      this.articleService.getLatestArticleByPublicIdAndStatusAndEditedBy(this.publicId, user.username).pipe(
-        catchError(error => {
-          this.errorMessage = 'ID of Article not found';
-          this.articleLoaded = true;
-          return of(null);
-        })
-      ).subscribe((data: ArticleDto | null) => {
-        if (data) {
-          this.articleForm.patchValue(data);
-          this.initialFormValue = {...this.articleForm.value};
-        } else {
-          this.errorMessage = 'ID of Article not found';
-        }
-        this.articleLoaded = true;
-      });
-    }
-  }
+  //
+  // loadLatestEditedArticle(): void {
+  //   const user = this.storageService.getUser();
+  //   if (user) {
+  //     this.articleService.getLatestArticleByPublicIdAndStatusAndEditedBy(this.publicId, user.username).pipe(
+  //       catchError(error => {
+  //         this.errorMessage = 'ID of Article not found';
+  //         this.articleLoaded = true;
+  //         return of(null);
+  //       })
+  //     ).subscribe((data: ArticleDto | null) => {
+  //       console.log(data)
+  //       if (data) {
+  //         this.articleForm.patchValue(data);
+  //         this.initialFormValue = {...this.articleForm.value};
+  //       } else {
+  //         this.errorMessage = 'ID of Article not found';
+  //       }
+  //       this.articleLoaded = true;
+  //     });
+  //   }
+  // }
 
   hasFormChanged(): boolean {
     return JSON.stringify(this.initialFormValue) !== JSON.stringify(this.articleForm.value);

@@ -27,6 +27,10 @@ export class ArticleService {
     return this.http.get<ArticleDto[]>(`${this.apiUrl}`);
   }
 
+  getArticleByPublicId(publicId: string): Observable<ArticleDto[]> {
+    return this.http.get<ArticleDto[]>(`${this.apiUrl}/article/${publicId}`);
+  }
+
   // getArticleVersionsByRole(publicId: string, role: string): Observable<ArticleDto[]> {
   //   const params = new HttpParams().set('role', role);
   //   return this.http.get<ArticleDto[]>(`${this.apiUrl}/${publicId}/versions`, {params});
@@ -56,8 +60,8 @@ export class ArticleService {
     return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/latest`, {params});
   }
 
-  getLatestArticleByPublicIdAndVersion(publicId: string, version: number): Observable<ArticleDto> {
-    return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/latestWithVersion/${version}`);
+  getArticleByPublicIdAndVersion(publicId: string, version: number): Observable<ArticleDto> {
+    return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/version/${version}`);
   }
 
   // getLatestArticleByPublicIdAndLatestVersion(publicId: string): Observable<ArticleDto> {
@@ -71,5 +75,4 @@ export class ArticleService {
   getArticlesEditedByUser(username: string): Observable<ArticleDto[]> {
     return this.http.get<ArticleDto[]>(`${this.apiUrl}/user/${username}`);
   }
-
 }

@@ -44,10 +44,17 @@ export class ArticleService {
     return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/approvedArticleByPublicIdAndLastVersion`);
   }
 
-  updateArticle(id: string, username: string, articleDto: ArticleDto): Observable<ArticleDto> {
+  updateArticle(id: string, username: string, articleDto: ArticleDto, version?: number): Observable<ArticleDto> {
     articleDto.editedBy = username;
-    return this.http.put<ArticleDto>(`${this.apiUrl}/${id}`, articleDto);
+
+    let params = new HttpParams();
+    if (version !== undefined) {
+      params = params.set('version', version.toString());
+    }
+
+    return this.http.put<ArticleDto>(`${this.apiUrl}/${id}`, articleDto, { params });
   }
+
 
   setApprovalStatus(publicId: string, status: string, version: number, username: string): Observable<ArticleDto> {
     const approvalRequest: ApprovalRequestDto = {status: status, version: version, editedBy: username};

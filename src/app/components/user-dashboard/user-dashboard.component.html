@@ -34,7 +34,7 @@
               <mat-card class="article-card">
                 <div class="article-info">
                   <mat-card-title>
-                    <a [routerLink]="['/articles/edit/', article.publicId]" class="article-title">{{ article.title }}</a>
+                    <a [routerLink]="['/articles/edit/', article.publicId, article.version]" class="article-title">{{ article.title }}</a>
                   </mat-card-title>
                   <mat-card-subtitle class="article-description">
                     {{ article.description }}

@@ -76,6 +76,7 @@ export class ArticleEditComponent implements OnInit {
           return of(null);
         })
       ).subscribe((data) => {
+        console.log('data version in edit page: ', data?.version);
         if (data) {
           this.articleForm.patchValue(data);
           this.initialFormValue = {...this.articleForm.value};
@@ -117,8 +118,9 @@ export class ArticleEditComponent implements OnInit {
     const user = this.storageService.getUser();
     if (user && this.articleForm.valid) {
 
-      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: "EDITING"}; // Ensure publicId is included
-      this.articleService.updateArticle(this.publicId, user.username, updatedArticle).subscribe(() => {
+      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: "EDITING"};
+      console.log('updatedArticle: ', updatedArticle);
+      this.articleService.updateArticle(this.publicId, user.username, updatedArticle, this.version).subscribe(() => {
         this.router.navigate(['/user-dashboard']);
       });
     }
@@ -128,8 +130,8 @@ export class ArticleEditComponent implements OnInit {
     const user = this.storageService.getUser();
 
     if (user && this.articleForm.valid) {
-      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: 'SUBMITTED'}; // Ensure status is set to SUBMITTED
-      this.articleService.updateArticle(this.publicId, user.username, updatedArticle).subscribe(() => {
+      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: 'SUBMITTED'};
+      this.articleService.updateArticle(this.publicId, user.username, updatedArticle, this.version).subscribe(() => {
         this.router.navigate(['/articles']);
       });
     }

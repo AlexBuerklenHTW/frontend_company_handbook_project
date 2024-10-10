@@ -49,7 +49,7 @@ export class ArticleDetailComponent implements OnInit {
   ngOnInit(): void {
     this.publicId = this.route.snapshot.paramMap.get('id') || '';
     this.loadApprovedArticleByPublicIdAndLastVersion(this.publicId);
-    this.loadAllApprovedArticlesByPublicId(this.publicId);
+    this.loadAllApprovedArticlesByPublicIdForVersions(this.publicId);
   }
 
   loadApprovedArticleByPublicIdAndLastVersion(publicId: string): void {
@@ -65,6 +65,7 @@ export class ArticleDetailComponent implements OnInit {
         this.latestVersion = article.version;
         this.selectedVersion = article.version;
         this.status = article.status;
+        console.log('detailpage status: ', this.status)
       } else {
         this.errorMessage = 'No approved article found';
       }
@@ -73,7 +74,7 @@ export class ArticleDetailComponent implements OnInit {
   }
 
 
-  loadAllApprovedArticlesByPublicId(publicId: string): void {
+  loadAllApprovedArticlesByPublicIdForVersions(publicId: string): void {
     this.articleService.getAllApprovedArticlesByPublicId(publicId).subscribe((articles: ArticleDto[]) => {
         this.articles = articles;
       }

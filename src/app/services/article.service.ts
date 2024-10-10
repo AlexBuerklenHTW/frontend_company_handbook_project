@@ -67,8 +67,8 @@ export class ArticleService {
     return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/latest`, {params});
   }
 
-  getArticleByPublicIdAndVersion(publicId: string, version: number): Observable<ArticleDto> {
-    return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/version/${version}`);
+  getArticleByPublicIdAndVersion(publicId: string, version: number, status: string): Observable<ArticleDto> {
+    return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/version/${version}/${status}`);
   }
 
   // getLatestArticleByPublicIdAndLatestVersion(publicId: string): Observable<ArticleDto> {

@@ -38,6 +38,7 @@ export class ArticleEditComponent implements OnInit {
   version: number | undefined;
   errorMessage: string | null = null;
   articleLoaded: boolean = false;
+  status!: string;
   private initialFormValue!: Partial<ArticleDto>;
 
   init: EditorComponent['init'] = {
@@ -63,20 +64,22 @@ export class ArticleEditComponent implements OnInit {
   ngOnInit(): void {
     this.publicId = this.route.snapshot.params['id'];
     this.version = Number(this.route.snapshot.params['selectedVersion']);
-    this.loadLatestArticle(this.publicId, this.version);
+    this.status = this.route.snapshot.params['status'];
+    console.log(this.status);
+    this.loadLatestArticle(this.publicId, this.version, this.status);
   }
 
-  loadLatestArticle(publicId: string, version: number): void {
+  loadLatestArticle(publicId: string, version: number, status: string): void {
     const user = this.storageService.getUser();
     if (user) {
-      this.articleService.getArticleByPublicIdAndVersion(publicId, version).pipe(
+      this.articleService.getArticleByPublicIdAndVersion(publicId, version, status).pipe(
         catchError(() => {
           this.errorMessage = 'ID of Article not found';
           this.articleLoaded = true;
           return of(null);
         })
       ).subscribe((data) => {
-        console.log('data version in edit page: ', data?.version);
+        console.log('data : ', data);
         if (data) {
           this.articleForm.patchValue(data);
           this.initialFormValue = {...this.articleForm.value};

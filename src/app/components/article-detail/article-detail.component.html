@@ -33,10 +33,12 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-
-        <button mat-raised-button color="primary" *ngIf="selectedVersion === latestVersion && !latestSubmittedArticle"
-                [routerLink]="['/articles/edit', publicId, selectedVersion, status]">Edit</button>
-
+        <ng-container *ngFor="let article of articles">
+          <button *ngIf="article.version === selectedVersion && article.isEditable" mat-raised-button color="primary"
+                  [routerLink]="['/articles/edit', article.publicId, selectedVersion, status]">
+            Edit
+          </button>
+        </ng-container>
         <ng-container *ngIf="isAdmin && (selectedVersion === latestVersion || latestSubmittedArticle)">
           <ng-container *ngIf="!isArticleApproved(); else approvedTemplate">
             <button mat-raised-button color="accent" (click)="approveArticle('APPROVED')">Approve</button>

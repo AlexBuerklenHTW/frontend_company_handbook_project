@@ -28,7 +28,7 @@ import {StorageService} from "../../services/storage.service";
 })
 export class ArticleDetailComponent implements OnInit {
   article: ArticleDto | undefined;
-  articles: ArticleDto[] = [];  // Artikel werden hier gespeichert
+  articles: ArticleDto[] = [];
   selectedVersion: number | undefined;
   errorMessage: string | null = null;
   articleLoaded: boolean = false;
@@ -65,7 +65,6 @@ export class ArticleDetailComponent implements OnInit {
         this.latestVersion = article.version;
         this.selectedVersion = article.version;
         this.status = article.status;
-        console.log('detailpage status: ', this.status)
       } else {
         this.errorMessage = 'No approved article found';
       }

@@ -40,6 +40,7 @@ export class ArticleEditComponent implements OnInit {
   articleLoaded: boolean = false;
   status!: string;
   private initialFormValue!: Partial<ArticleDto>;
+  isEditable: boolean = false;
 
   init: EditorComponent['init'] = {
     base_url: '/tinymce',
@@ -121,9 +122,8 @@ export class ArticleEditComponent implements OnInit {
     const user = this.storageService.getUser();
     if (user && this.articleForm.valid) {
 
-      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: "EDITING"};
-      console.log('updatedArticle: ', updatedArticle);
-      this.articleService.updateArticle(this.publicId, user.username, updatedArticle, this.version).subscribe(() => {
+      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: "EDITING", isEditable: false};
+      this.articleService.updateArticle(this.publicId, user.username, updatedArticle, this.version, this.isEditable).subscribe(() => {
         this.router.navigate(['/user-dashboard']);
       });
     }
@@ -134,7 +134,7 @@ export class ArticleEditComponent implements OnInit {
 
     if (user && this.articleForm.valid) {
       const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: 'SUBMITTED'};
-      this.articleService.updateArticle(this.publicId, user.username, updatedArticle, this.version).subscribe(() => {
+      this.articleService.updateArticle(this.publicId, user.username, updatedArticle, this.version, this.isEditable).subscribe(() => {
         this.router.navigate(['/articles']);
       });
     }

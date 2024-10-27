@@ -25,6 +25,7 @@
   <div class="article-actions">
     <mat-card class="actions-card">
       <mat-card-content>
+        <ng-container *ngIf="isUser">
         <mat-form-field appearance="fill" class="version-select">
           <mat-label>Version</mat-label>
           <mat-select [(value)]="selectedVersion" (selectionChange)="onVersionChange($event.value)">
@@ -33,6 +34,7 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
+        </ng-container>
         <ng-container *ngFor="let article of articles">
           <button *ngIf="article.version === selectedVersion && article.isEditable" mat-raised-button color="primary"
                   [routerLink]="['/articles/edit', article.publicId, selectedVersion, status]">

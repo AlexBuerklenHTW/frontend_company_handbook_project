@@ -34,10 +34,10 @@
               <mat-card class="article-card">
                 <div class="article-info">
                   <mat-card-title>
-                    <a [routerLink]="['/articles', articleGroup.latest.publicId]" class="article-title">{{ articleGroup.latest.title }}</a>
+                    <a [routerLink]="['/articles', articleGroup.article.publicId, articleGroup.article.status]" class="article-title">{{ articleGroup.article.title }}</a>
                   </mat-card-title>
                   <mat-card-subtitle class="article-description">
-                    {{ articleGroup.latest.description }}
+                    {{ articleGroup.article.description }}
                   </mat-card-subtitle>
                 </div>
               </mat-card>

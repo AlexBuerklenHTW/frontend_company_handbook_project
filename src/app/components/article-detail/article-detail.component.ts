@@ -38,6 +38,7 @@ export class ArticleDetailComponent implements OnInit {
   isAdmin: boolean = false;
   status: string = '';
   version: number = 0;
+  isUser: null | boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,11 +48,19 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.publicId = this.route.snapshot.paramMap.get('id') || '';
-    this.loadApprovedArticleByPublicIdAndLastVersion(this.publicId);
-    this.loadAllApprovedArticlesByPublicIdForVersions(this.publicId);
+    this.checkRole()
+    this.publicId = this.route.snapshot.paramMap.get('id') || 'no id transferred';
+    this.status = this.route.snapshot.paramMap.get('status') || 'no status transferred';
+    if (this.status === 'APPROVED') {
+      this.loadApprovedArticleByPublicIdAndLastVersion(this.publicId);
+      this.loadAllApprovedArticlesByPublicIdForVersions(this.publicId);
+    }
+    if (this.status === 'SUBMITTED') {
+      this.loadSubmittedArticleByPublicIdAndStatus(this.publicId, this.status)
+    }
   }
 
+  // load details of article, when approved
   loadApprovedArticleByPublicIdAndLastVersion(publicId: string): void {
     this.articleService.getApprovedArticleByPublicIdAndLastVersion(publicId).pipe(
       catchError(() => {
@@ -64,7 +73,6 @@ export class ArticleDetailComponent implements OnInit {
         this.article = article;
         this.latestVersion = article.version;
         this.selectedVersion = article.version;
-        this.status = article.status;
       } else {
         this.errorMessage = 'No approved article found';
       }
@@ -72,13 +80,33 @@ export class ArticleDetailComponent implements OnInit {
     });
   }
 
-
+  // for the drop-down menü
   loadAllApprovedArticlesByPublicIdForVersions(publicId: string): void {
     this.articleService.getAllApprovedArticlesByPublicId(publicId).subscribe((articles: ArticleDto[]) => {
         this.articles = articles;
       }
     )
   }
+
+  loadSubmittedArticleByPublicIdAndStatus(publicId: string, status: string): void {
+    this.articleService.getSubmittedArticleByPublicId(publicId, status).pipe(
+      catchError(() => {
+        this.errorMessage = 'Error loading submitted article';
+        this.articleLoaded = true;
+        return of(undefined);
+      })
+    ).subscribe((article: ArticleDto | undefined) => {
+      if (article) {
+        this.article = article;
+        this.latestVersion = article.version;
+        this.selectedVersion = article.version;
+      } else {
+        this.errorMessage = 'No submitted article found';
+      }
+      this.articleLoaded = true;
+    });
+  }
+
 
   isArticleApproved(): boolean {
     return this.article?.status === "APPROVED";
@@ -103,11 +131,13 @@ export class ArticleDetailComponent implements OnInit {
     }
   }
 
-  // need for admin
-  checkAdmin(): void {
+  checkRole(): void {
     const user = this.storageService.getUser();
-    if (user) {
+    if (user?.role === 'ROLE_ADMIN') {
       this.isAdmin = user && user.role === 'ROLE_ADMIN';
+    }
+    else {
+      this.isUser = user && user.role === 'ROLE_USER'
     }
   }
 }

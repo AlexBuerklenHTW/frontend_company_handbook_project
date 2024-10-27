@@ -32,7 +32,7 @@
           <div class="article-item" *ngFor="let article of filteredArticles">
             <mat-card class="article-card">
               <mat-card-title>
-                <a [routerLink]="['/articles', article.publicId]" class="article-title">{{ article.title }}</a>
+                <a [routerLink]="['/articles', article.publicId, article.status]" class="article-title">{{ article.title }}</a>
               </mat-card-title>
               <mat-card-subtitle class="article-description">
                 {{ article.description }}

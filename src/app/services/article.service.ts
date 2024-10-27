@@ -23,12 +23,12 @@ export class ArticleService {
     return this.http.post<ArticleDto>(`${this.apiUrl}`, articleDto);
   }
 
-  getAllArticles(): Observable<ArticleDto[]> {
+  getListOfArticlesByStatusSubmitted(): Observable<ArticleDto[]> {
     return this.http.get<ArticleDto[]>(`${this.apiUrl}`);
   }
 
-  getArticleByPublicId(publicId: string): Observable<ArticleDto[]> {
-    return this.http.get<ArticleDto[]>(`${this.apiUrl}/article/${publicId}`);
+  getSubmittedArticleByPublicId(publicId: string, status: string): Observable<ArticleDto> {
+    return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/${status}/submittedArticleByPublicId`);
   }
 
   // getArticleVersionsByRole(publicId: string, role: string): Observable<ArticleDto[]> {

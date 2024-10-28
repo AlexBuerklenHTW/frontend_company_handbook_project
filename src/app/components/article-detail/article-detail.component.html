@@ -25,7 +25,7 @@
   <div class="article-actions">
     <mat-card class="actions-card">
       <mat-card-content>
-        <ng-container *ngIf="isUser">
+        <ng-container *ngIf="!isSubmitted">
         <mat-form-field appearance="fill" class="version-select">
           <mat-label>Version</mat-label>
           <mat-select [(value)]="selectedVersion" (selectionChange)="onVersionChange($event.value)">
@@ -43,8 +43,8 @@
         </ng-container>
         <ng-container *ngIf="isAdmin && (selectedVersion === latestVersion || latestSubmittedArticle)">
           <ng-container *ngIf="!isArticleApproved(); else approvedTemplate">
-            <button mat-raised-button color="accent" (click)="approveArticle('APPROVED')">Approve</button>
-            <button mat-raised-button color="accent" (click)="approveArticle('EDITING')">Deny</button>
+            <button mat-raised-button color="accent" (click)="approveArticle()">Approve</button>
+            <button mat-raised-button color="accent" (click)="approveArticle()">Deny</button>
             <span class="not-approved-label">Not Approved</span>
           </ng-container>
           <ng-template #approvedTemplate>

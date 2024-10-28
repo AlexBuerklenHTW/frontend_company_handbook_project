@@ -75,7 +75,6 @@ export class AdminDashboardComponent implements OnInit {
         return of(null);
       })
     ).subscribe((data: ArticleDto[] | null) => {
-      console.log('data: ', data)
       if (data) {
         this.articles = data;
         this.groupArticles();

@@ -33,12 +33,13 @@ export class ArticleDetailComponent implements OnInit {
   errorMessage: string | null = null;
   articleLoaded: boolean = false;
   publicId: string = '';
-  latestVersion: number | undefined;
+  latestVersion: number | undefined = 0;
   latestSubmittedArticle: ArticleDto | undefined;
   isAdmin: boolean = false;
   status: string = '';
   version: number = 0;
   isUser: null | boolean = false;
+  isSubmitted: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -78,11 +79,14 @@ export class ArticleDetailComponent implements OnInit {
       }
       this.articleLoaded = true;
     });
+    if (this.article?.status === 'SUBMITTED') {
+      this.isSubmitted = true;
+    }
   }
 
   // for the drop-down menü
   loadAllApprovedArticlesByPublicIdForVersions(publicId: string): void {
-    this.articleService.getAllApprovedArticlesByPublicId(publicId).subscribe((articles: ArticleDto[]) => {
+    this.articleService.getAllApprovedAndDeclinedArticlesByPublicId(publicId).subscribe((articles: ArticleDto[]) => {
         this.articles = articles;
       }
     )
@@ -103,6 +107,7 @@ export class ArticleDetailComponent implements OnInit {
       } else {
         this.errorMessage = 'No submitted article found';
       }
+      this.isSubmitted = true;
       this.articleLoaded = true;
     });
   }
@@ -117,11 +122,10 @@ export class ArticleDetailComponent implements OnInit {
     this.article = this.articles.find(v => v.version === version);
   }
 
-  approveArticle(status: string): void {
+  approveArticle(): void {
     const user = this.storageService.getUser();
     if (user) {
-      const newVersion: number = this.latestVersion! + 1;
-      this.articleService.setApprovalStatus(this.publicId, status, newVersion, user?.username).subscribe((article) => {
+      this.articleService.setApprovalStatus(this.publicId, this.article).subscribe((article) => {
         if (this.article) {
           this.article.status = article.status;
         }
@@ -135,8 +139,7 @@ export class ArticleDetailComponent implements OnInit {
     const user = this.storageService.getUser();
     if (user?.role === 'ROLE_ADMIN') {
       this.isAdmin = user && user.role === 'ROLE_ADMIN';
-    }
-    else {
+    } else {
       this.isUser = user && user.role === 'ROLE_USER'
     }
   }

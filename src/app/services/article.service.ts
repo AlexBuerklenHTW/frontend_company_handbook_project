@@ -3,12 +3,6 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {ArticleDto} from "../model/Article";
 
-interface ApprovalRequestDto {
-  status: string;
-  version: number;
-  editedBy: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -36,8 +30,8 @@ export class ArticleService {
   //   return this.http.get<ArticleDto[]>(`${this.apiUrl}/${publicId}/versions`, {params});
   // }
 
-  getAllApprovedArticlesByPublicId(publicId: string): Observable<ArticleDto[]> {
-    return this.http.get<ArticleDto[]>(`${this.apiUrl}/${publicId}/approvedArticlesByPublicId`)
+  getAllApprovedAndDeclinedArticlesByPublicId(publicId: string): Observable<ArticleDto[]> {
+    return this.http.get<ArticleDto[]>(`${this.apiUrl}/${publicId}/approvedAndDeclinedArticlesByPublicId`)
   }
 
   getApprovedArticleByPublicIdAndLastVersion(publicId: string): Observable<ArticleDto> {
@@ -56,16 +50,15 @@ export class ArticleService {
   }
 
 
-  setApprovalStatus(publicId: string, status: string, version: number, username: string): Observable<ArticleDto> {
-    const approvalRequest: ApprovalRequestDto = {status: status, version: version, editedBy: username};
-    return this.http.put<ArticleDto>(`${this.apiUrl}/${publicId}/approval`, approvalRequest);
+  setApprovalStatus(publicId: string, articleDto: ArticleDto | undefined): Observable<ArticleDto> {
+    return this.http.post<ArticleDto>(`${this.apiUrl}/approval/${publicId}`, articleDto);
   }
 
-  getLatestArticleByPublicIdAndStatusAndEditedBy(publicId: string, editedBy: string): Observable<ArticleDto> {
-    const params = new HttpParams()
-      .set('editedBy', editedBy);
-    return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/latest`, {params});
-  }
+  // getLatestArticleByPublicIdAndStatusAndEditedBy(publicId: string, editedBy: string): Observable<ArticleDto> {
+  //   const params = new HttpParams()
+  //     .set('editedBy', editedBy);
+  //   return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/latest`, {params});
+  // }
 
   getArticleByPublicIdAndVersion(publicId: string, version: number, status: string): Observable<ArticleDto> {
     return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/version/${version}/${status}`);

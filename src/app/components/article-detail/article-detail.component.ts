@@ -40,6 +40,7 @@ export class ArticleDetailComponent implements OnInit {
   version: number = 0;
   isUser: null | boolean = false;
   isSubmitted: boolean = false;
+  versionStatusMap = new Map<number, string>();
 
   constructor(
     private route: ActivatedRoute,
@@ -71,6 +72,7 @@ export class ArticleDetailComponent implements OnInit {
       })
     ).subscribe((article: ArticleDto | undefined) => {
       if (article) {
+        console.log(article)
         this.article = article;
         this.latestVersion = article.version;
         this.selectedVersion = article.version;
@@ -88,8 +90,16 @@ export class ArticleDetailComponent implements OnInit {
   loadAllApprovedArticlesByPublicIdForVersions(publicId: string): void {
     this.articleService.getAllApprovedAndDeclinedArticlesByPublicId(publicId).subscribe((articles: ArticleDto[]) => {
         this.articles = articles;
+
+        console.log(this.articles)
+        articles.forEach(article => {
+          if (article.version != null) {
+            this.versionStatusMap.set(article.version, article.status);
+          }
+        });
       }
     )
+    console.log(this.versionStatusMap);
   }
 
   loadSubmittedArticleByPublicIdAndStatus(publicId: string, status: string): void {
@@ -120,6 +130,14 @@ export class ArticleDetailComponent implements OnInit {
   onVersionChange(version: number): void {
     this.selectedVersion = version;
     this.article = this.articles.find(v => v.version === version);
+  }
+
+  //TODO: Deny Funktionalität umsetzten
+  denyArticle(): void {
+  }
+
+  get versionStatusArray(): { version: number; status: string }[] {
+    return Array.from(this.versionStatusMap.entries()).map(([version, status]) => ({ version, status }));
   }
 
   approveArticle(): void {

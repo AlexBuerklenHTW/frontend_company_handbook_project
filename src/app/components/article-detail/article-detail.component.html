@@ -26,14 +26,14 @@
     <mat-card class="actions-card">
       <mat-card-content>
         <ng-container *ngIf="!isSubmitted">
-        <mat-form-field appearance="fill" class="version-select">
-          <mat-label>Version</mat-label>
-          <mat-select [(value)]="selectedVersion" (selectionChange)="onVersionChange($event.value)">
-            <mat-option *ngFor="let article of articles" [value]="article.version">
-              Version {{ article.version }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+          <mat-form-field appearance="fill" class="version-select">
+            <mat-label>Version</mat-label>
+            <mat-select [(value)]="selectedVersion" (selectionChange)="onVersionChange($event.value)">
+              <mat-option *ngFor="let article of articles" [value]="article.version">
+                Version {{ article.version }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </ng-container>
         <ng-container *ngFor="let article of articles">
           <button *ngIf="article.version === selectedVersion && article.isEditable" mat-raised-button color="primary"
@@ -42,14 +42,21 @@
           </button>
         </ng-container>
         <ng-container *ngIf="isAdmin && (selectedVersion === latestVersion || latestSubmittedArticle)">
-          <ng-container *ngIf="!isArticleApproved(); else approvedTemplate">
+          <ng-container *ngIf="!isArticleApproved()">
             <button mat-raised-button color="accent" (click)="approveArticle()">Approve</button>
-            <button mat-raised-button color="accent" (click)="approveArticle()">Deny</button>
+            <button mat-raised-button color="accent" (click)="denyArticle()">Deny</button>
             <span class="not-approved-label">Not Approved</span>
           </ng-container>
-          <ng-template #approvedTemplate>
-            <div class="approved-label">Approved</div>
-          </ng-template>
+        </ng-container>
+        <ng-container *ngFor="let entry of versionStatusArray">
+          <ng-container *ngIf="entry.version === selectedVersion">
+            <ng-container *ngIf="entry.status === 'APPROVED'">
+              <div class="approved-label">{{ entry.status }}</div>
+            </ng-container>
+            <ng-container *ngIf="entry.status === 'DECLINED'">
+              <div class="declined-label">{{ entry.status }}</div>
+            </ng-container>
+          </ng-container>
         </ng-container>
       </mat-card-content>
     </mat-card>

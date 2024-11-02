@@ -8,5 +8,6 @@ export interface ArticleDto {
   editedBy?: string;
   versions?: ArticleDto[];
   isEditable: boolean;
+  isSubmitted: boolean;
 }
 

@@ -72,7 +72,6 @@ export class ArticleDetailComponent implements OnInit {
       })
     ).subscribe((article: ArticleDto | undefined) => {
       if (article) {
-        console.log(article)
         this.article = article;
         this.latestVersion = article.version;
         this.selectedVersion = article.version;
@@ -88,10 +87,9 @@ export class ArticleDetailComponent implements OnInit {
 
   // for the drop-down menü
   loadAllApprovedArticlesByPublicIdForVersions(publicId: string): void {
-    this.articleService.getAllApprovedAndDeclinedArticlesByPublicId(publicId).subscribe((articles: ArticleDto[]) => {
+    this.articleService.getAllApprovedArticlesByPublicId(publicId).subscribe((articles: ArticleDto[]) => {
         this.articles = articles;
 
-        console.log(this.articles)
         articles.forEach(article => {
           if (article.version != null) {
             this.versionStatusMap.set(article.version, article.status);
@@ -99,7 +97,6 @@ export class ArticleDetailComponent implements OnInit {
         });
       }
     )
-    console.log(this.versionStatusMap);
   }
 
   loadSubmittedArticleByPublicIdAndStatus(publicId: string, status: string): void {

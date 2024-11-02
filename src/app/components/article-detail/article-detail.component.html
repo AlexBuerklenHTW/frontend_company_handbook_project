@@ -52,11 +52,11 @@
           <ng-container *ngIf="entry.version === selectedVersion">
             <ng-container *ngIf="entry.status === 'APPROVED'">
               <div class="approved-label">{{ entry.status }}</div>
-              <div class="edited-by">{{article?.editedBy}}</div>
+              <div class="edited-by">Edited by: {{article?.editedBy}}</div>
             </ng-container>
             <ng-container *ngIf="entry.status === 'DECLINED'">
               <div class="declined-label">{{ entry.status }}</div>
-              <div class="edited-by">{{article?.editedBy}}</div>
+              <div class="edited-by"> Edited by: {{article?.editedBy}}</div>
             </ng-container>
           </ng-container>
         </ng-container>

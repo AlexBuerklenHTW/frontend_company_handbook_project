@@ -35,12 +35,14 @@ import {StorageService} from "../../services/storage.service";
 export class ArticleEditComponent implements OnInit {
   articleForm: FormGroup;
   publicId!: string;
+  editedBy: string | undefined;
   version: number | undefined;
   errorMessage: string | null = null;
   articleLoaded: boolean = false;
   status!: string;
   private initialFormValue!: Partial<ArticleDto>;
   isEditable: boolean = false;
+  isSubmitted: boolean = false;
 
   init: EditorComponent['init'] = {
     base_url: '/tinymce',
@@ -66,7 +68,6 @@ export class ArticleEditComponent implements OnInit {
     this.publicId = this.route.snapshot.params['id'];
     this.version = Number(this.route.snapshot.params['selectedVersion']);
     this.status = this.route.snapshot.params['status'];
-    console.log(this.status);
     this.loadLatestArticle(this.publicId, this.version, this.status);
   }
 
@@ -80,8 +81,9 @@ export class ArticleEditComponent implements OnInit {
           return of(null);
         })
       ).subscribe((data) => {
-        console.log('data : ', data);
         if (data) {
+          this.editedBy = data.editedBy;
+          this.isSubmitted = data.isSubmitted;
           this.articleForm.patchValue(data);
           this.initialFormValue = {...this.articleForm.value};
         } else {
@@ -118,23 +120,26 @@ export class ArticleEditComponent implements OnInit {
     return JSON.stringify(this.initialFormValue) !== JSON.stringify(this.articleForm.value);
   }
 
+  // saving Article
   onSubmit(): void {
     const user = this.storageService.getUser();
     if (user && this.articleForm.valid) {
 
-      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: "EDITING", isEditable: false};
-      this.articleService.updateArticle(this.publicId, user.username, updatedArticle, this.version, this.isEditable).subscribe(() => {
+      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: "APPROVED", isEditable: false, editedBy: this.editedBy, version: this.version, isSubmitted: this.isSubmitted};
+      this.articleService.updateArticle(this.publicId, updatedArticle, this.editedBy, this.version, false).subscribe(() => {
         this.router.navigate(['/user-dashboard']);
       });
     }
   }
 
+  // Submitting Article
   onSubmitArticle(): void {
     const user = this.storageService.getUser();
 
+
     if (user && this.articleForm.valid) {
-      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: 'SUBMITTED'};
-      this.articleService.updateArticle(this.publicId, user.username, updatedArticle, this.version, this.isEditable).subscribe(() => {
+      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: 'SUBMITTED', editedBy: this.editedBy, version: this.version, isSubmitted: this.isSubmitted};
+      this.articleService.setEditingStatus(updatedArticle.editedBy, updatedArticle).subscribe(() => {
         this.router.navigate(['/articles']);
       });
     }

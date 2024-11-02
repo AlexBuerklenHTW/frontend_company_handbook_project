@@ -12,9 +12,14 @@ export class ArticleService {
   constructor(private http: HttpClient) {
   }
 
-  createArticle(username: string, articleDto: ArticleDto): Observable<ArticleDto> {
+  createArticle(username: string | undefined, articleDto: ArticleDto): Observable<ArticleDto> {
     articleDto.editedBy = username;
     return this.http.post<ArticleDto>(`${this.apiUrl}`, articleDto);
+  }
+
+  setEditingStatus(username: string | undefined, articleDto: ArticleDto): Observable<ArticleDto> {
+    articleDto.editedBy = username;
+    return this.http.post<ArticleDto>(`${this.apiUrl}/submitting`, articleDto);
   }
 
   getListOfArticlesByStatusSubmitted(): Observable<ArticleDto[]> {
@@ -30,24 +35,27 @@ export class ArticleService {
   //   return this.http.get<ArticleDto[]>(`${this.apiUrl}/${publicId}/versions`, {params});
   // }
 
-  getAllApprovedAndDeclinedArticlesByPublicId(publicId: string): Observable<ArticleDto[]> {
-    return this.http.get<ArticleDto[]>(`${this.apiUrl}/${publicId}/approvedAndDeclinedArticlesByPublicId`)
+  getAllApprovedArticlesByPublicId(publicId: string): Observable<ArticleDto[]> {
+    return this.http.get<ArticleDto[]>(`${this.apiUrl}/${publicId}/approvedArticlesByPublicId`)
   }
 
   getApprovedArticleByPublicIdAndLastVersion(publicId: string): Observable<ArticleDto> {
     return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/approvedArticleByPublicIdAndLastVersion`);
   }
 
-  updateArticle(publicId: string, username: string, articleDto: ArticleDto, version?: number, isEditable?: boolean): Observable<ArticleDto> {
-    articleDto.editedBy = username;
+  updateArticle(publicId: string, articleDto: ArticleDto | undefined, editedBy?: string, version?: number, isEditable?: boolean): Observable<ArticleDto> {
+    if (articleDto) {
+      articleDto.editedBy = editedBy;
+    }
 
     let params = new HttpParams();
     if (version !== undefined) {
       params = params.set('version', version.toString());
     }
 
-    return this.http.put<ArticleDto>(`${this.apiUrl}/${publicId}/${isEditable}`, articleDto, { params });
+    return this.http.post<ArticleDto>(`${this.apiUrl}/${publicId}/${isEditable}`, articleDto, { params });
   }
+
 
 
   setApprovalStatus(publicId: string, articleDto: ArticleDto | undefined): Observable<ArticleDto> {

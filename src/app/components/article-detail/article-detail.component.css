@@ -46,8 +46,8 @@ button {
 }
 
 .edited-by {
-  background-color: black;
-  color: white;
+  background-color: yellow;
+  color: black;
   padding: 8px 16px;
   text-align: center;
   border-radius: 4px;

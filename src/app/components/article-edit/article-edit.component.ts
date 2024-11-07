@@ -125,7 +125,7 @@ export class ArticleEditComponent implements OnInit {
     const user = this.storageService.getUser();
     if (user && this.articleForm.valid) {
 
-      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: "APPROVED", isEditable: false, editedBy: this.editedBy, version: this.version, isSubmitted: this.isSubmitted};
+      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: "EDITING", isEditable: false, editedBy: this.editedBy, version: this.version, isSubmitted: this.isSubmitted};
       this.articleService.updateArticle(this.publicId, updatedArticle, this.editedBy, this.version, false).subscribe(() => {
         this.router.navigate(['/user-dashboard']);
       });

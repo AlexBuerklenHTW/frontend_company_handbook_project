@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {ArticleDto} from "../../model/Article";
 import {ArticleService} from "../../services/article.service";
 import {NgIf, NgFor} from "@angular/common";
@@ -45,7 +45,8 @@ export class ArticleDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private articleService: ArticleService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private router: Router,
   ) {
   }
 
@@ -55,7 +56,7 @@ export class ArticleDetailComponent implements OnInit {
     this.status = this.route.snapshot.paramMap.get('status') || 'no status transferred';
     if (this.status === 'APPROVED') {
       this.loadApprovedArticleByPublicIdAndLastVersion(this.publicId);
-      this.loadAllApprovedArticlesByPublicIdForVersions(this.publicId);
+      this.loadAllApprovedArticlesByPublicIdForVersions(this.publicId, this.status);
     }
     if (this.status === 'SUBMITTED') {
       this.loadSubmittedArticleByPublicIdAndStatus(this.publicId, this.status)
@@ -86,8 +87,8 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   // for the drop-down menü
-  loadAllApprovedArticlesByPublicIdForVersions(publicId: string): void {
-    this.articleService.getAllApprovedArticlesByPublicId(publicId).subscribe((articles: ArticleDto[]) => {
+  loadAllApprovedArticlesByPublicIdForVersions(publicId: string, status: string): void {
+    this.articleService.getAllApprovedArticlesByPublicId(publicId, status).subscribe((articles: ArticleDto[]) => {
         this.articles = articles;
 
         articles.forEach(article => {
@@ -129,12 +130,14 @@ export class ArticleDetailComponent implements OnInit {
     this.article = this.articles.find(v => v.version === version);
   }
 
-  //TODO: Deny Funktionalität umsetzten
-  denyArticle(): void {
+  denyArticle(publicId: string, status: string): void {
+    this.articleService.declineArticle(publicId, status).subscribe();
+    this.router.navigate(['/articles']);
   }
 
+
   get versionStatusArray(): { version: number; status: string }[] {
-    return Array.from(this.versionStatusMap.entries()).map(([version, status]) => ({ version, status }));
+    return Array.from(this.versionStatusMap.entries()).map(([version, status]) => ({version, status}));
   }
 
   approveArticle(): void {
@@ -143,6 +146,7 @@ export class ArticleDetailComponent implements OnInit {
       this.articleService.setApprovalStatus(this.publicId, this.article).subscribe((article) => {
         if (this.article) {
           this.article.status = article.status;
+          this.router.navigate(['/articles']);
         }
       }, () => {
         this.errorMessage = 'Error approving article';

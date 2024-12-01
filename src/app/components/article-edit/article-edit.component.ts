@@ -125,7 +125,9 @@ export class ArticleEditComponent implements OnInit {
     const user = this.storageService.getUser();
     if (user && this.articleForm.valid) {
 
-      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: "EDITING", isEditable: false, editedBy: this.editedBy, version: this.version, isSubmitted: this.isSubmitted};
+      this.editedBy = user.username;
+
+      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: this.status, isEditable: false, editedBy: this.editedBy, version: this.version, isSubmitted: this.isSubmitted};
       this.articleService.updateArticle(this.publicId, updatedArticle, this.editedBy, this.version, false).subscribe(() => {
         this.router.navigate(['/user-dashboard']);
       });
@@ -138,8 +140,10 @@ export class ArticleEditComponent implements OnInit {
 
 
     if (user && this.articleForm.valid) {
+      this.editedBy = user.username;
+
       const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: 'SUBMITTED', editedBy: this.editedBy, version: this.version, isSubmitted: this.isSubmitted};
-      this.articleService.setEditingStatus(updatedArticle.editedBy, updatedArticle).subscribe(() => {
+      this.articleService.setSubmitStatus(updatedArticle.editedBy, updatedArticle).subscribe(() => {
         this.router.navigate(['/articles']);
       });
     }

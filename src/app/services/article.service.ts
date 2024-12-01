@@ -17,7 +17,7 @@ export class ArticleService {
     return this.http.post<ArticleDto>(`${this.apiUrl}`, articleDto);
   }
 
-  setEditingStatus(username: string | undefined, articleDto: ArticleDto): Observable<ArticleDto> {
+  setSubmitStatus(username: string | undefined, articleDto: ArticleDto): Observable<ArticleDto> {
     articleDto.editedBy = username;
     return this.http.post<ArticleDto>(`${this.apiUrl}/submitting`, articleDto);
   }
@@ -35,8 +35,8 @@ export class ArticleService {
   //   return this.http.get<ArticleDto[]>(`${this.apiUrl}/${publicId}/versions`, {params});
   // }
 
-  getAllApprovedArticlesByPublicId(publicId: string): Observable<ArticleDto[]> {
-    return this.http.get<ArticleDto[]>(`${this.apiUrl}/${publicId}/approvedArticlesByPublicId`)
+  getAllApprovedArticlesByPublicId(publicId: string, status: string): Observable<ArticleDto[]> {
+    return this.http.get<ArticleDto[]>(`${this.apiUrl}/${publicId}/approvedArticlesByPublicId/${status}`)
   }
 
   getApprovedArticleByPublicIdAndLastVersion(publicId: string): Observable<ArticleDto> {
@@ -56,8 +56,6 @@ export class ArticleService {
     return this.http.post<ArticleDto>(`${this.apiUrl}/${publicId}/${isEditable}`, articleDto, { params });
   }
 
-
-
   setApprovalStatus(publicId: string, articleDto: ArticleDto | undefined): Observable<ArticleDto> {
     return this.http.post<ArticleDto>(`${this.apiUrl}/approval/${publicId}`, articleDto);
   }
@@ -75,6 +73,10 @@ export class ArticleService {
   // getLatestArticleByPublicIdAndLatestVersion(publicId: string): Observable<ArticleDto> {
   //   return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/latestWithVersion`);
   // }
+
+  declineArticle(publicId: string, status: string) {
+    return this.http.post<ArticleDto>(`${this.apiUrl}/decline/${publicId}/${status}`, {});
+  }
 
   getArticlesApproved(): Observable<ArticleDto[]> {
     return this.http.get<ArticleDto[]>(`${this.apiUrl}/approved`);

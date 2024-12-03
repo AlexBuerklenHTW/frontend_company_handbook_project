@@ -15,7 +15,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatOptionModule} from "@angular/material/core";
 
 interface GroupedArticle {
-  latest: ArticleDto;
+  article: ArticleDto;
   versions: ArticleDto[];
 }
 
@@ -68,7 +68,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   loadArticles(): void {
-    this.articleService.getAllArticles().pipe(
+    this.articleService.getListOfArticlesByStatusSubmitted().pipe(
       catchError(() => {
         this.errorMessage = 'Error loading articles. Please try again later.';
         this.articlesLoaded = true;
@@ -88,7 +88,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   applyDefaultSort(): void {
-    this.groupedArticles.sort((a, b) => a.latest.title.localeCompare(b.latest.title));
+    this.groupedArticles.sort((a, b) => a.article.title.localeCompare(b.article.title));
   }
 
   groupArticles(): void {
@@ -103,7 +103,7 @@ export class AdminDashboardComponent implements OnInit {
     this.groupedArticles = Array.from(articleMap.values()).map(versions => {
       const sortedVersions = versions.sort((a, b) => b.version! - a.version!);
       return {
-        latest: sortedVersions[0],
+        article: sortedVersions[0],
         versions: sortedVersions
       };
     });
@@ -111,16 +111,16 @@ export class AdminDashboardComponent implements OnInit {
 
   applyFilter(values: any): void {
     this.filteredGroupedArticles = this.groupedArticles.filter(articleGroup => {
-      const {latest} = articleGroup;
-      const matchesTitle = values.title ? latest.title.toLowerCase().includes(values.title.toLowerCase()) : true;
-      const matchesDescription = values.description ? latest.description.toLowerCase().includes(values.description.toLowerCase()) : true;
+      const {article} = articleGroup;
+      const matchesTitle = values.title ? article.title.toLowerCase().includes(values.title.toLowerCase()) : true;
+      const matchesDescription = values.description ? article.description.toLowerCase().includes(values.description.toLowerCase()) : true;
 
       return matchesTitle && matchesDescription;
     });
 
     if (values.sortOrder) {
       this.filteredGroupedArticles.sort((a, b) => {
-        const comparison = a.latest.title.localeCompare(b.latest.title);
+        const comparison = a.article.title.localeCompare(b.article.title);
         return values.sortOrder === 'asc' ? comparison : values.sortOrder === 'desc' ? -comparison : 0;
       });
     }

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {ArticleDto} from "../../model/Article";
 import {ArticleService} from "../../services/article.service";
 import {NgIf, NgFor} from "@angular/common";
@@ -28,74 +28,98 @@ import {StorageService} from "../../services/storage.service";
 })
 export class ArticleDetailComponent implements OnInit {
   article: ArticleDto | undefined;
-  versions: ArticleDto[] = [];
+  articles: ArticleDto[] = [];
   selectedVersion: number | undefined;
   errorMessage: string | null = null;
   articleLoaded: boolean = false;
   publicId: string = '';
-  latestVersion: number | undefined;
+  latestVersion: number | undefined = 0;
   latestSubmittedArticle: ArticleDto | undefined;
   isAdmin: boolean = false;
   status: string = '';
+  version: number = 0;
+  isUser: null | boolean = false;
+  isSubmitted: boolean = false;
+  versionStatusMap = new Map<number, string>();
 
   constructor(
     private route: ActivatedRoute,
     private articleService: ArticleService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private router: Router,
   ) {
   }
 
   ngOnInit(): void {
-    this.checkAdmin();
-    this.publicId = this.route.snapshot.paramMap.get('id') || '';
-    if (this.isAdmin) {
-      this.loadLatestSubmittedArticle();
+    this.checkRole()
+    this.publicId = this.route.snapshot.paramMap.get('id') || 'no id transferred';
+    this.status = this.route.snapshot.paramMap.get('status') || 'no status transferred';
+    if (this.status === 'APPROVED') {
+      this.loadApprovedArticleByPublicIdAndLastVersion(this.publicId);
+      this.loadAllApprovedArticlesByPublicIdForVersions(this.publicId, this.status);
     }
-    this.loadArticleVersionsForUserRole(this.publicId);
+    if (this.status === 'SUBMITTED') {
+      this.loadSubmittedArticleByPublicIdAndStatus(this.publicId, this.status)
+    }
   }
 
-  loadLatestSubmittedArticle(): void {
-    this.articleService.getLatestSubmittedArticle(this.publicId).pipe(
-      catchError(error => {
-        this.errorMessage = 'Error loading latest submitted article';
+  // load details of article, when approved
+  loadApprovedArticleByPublicIdAndLastVersion(publicId: string): void {
+    this.articleService.getApprovedArticleByPublicIdAndLastVersion(publicId).pipe(
+      catchError(() => {
+        this.errorMessage = 'Error loading latest approved article';
         this.articleLoaded = true;
         return of(undefined);
       })
     ).subscribe((article: ArticleDto | undefined) => {
-      this.latestSubmittedArticle = article;
+      if (article) {
+        this.article = article;
+        this.latestVersion = article.version;
+        this.selectedVersion = article.version;
+      } else {
+        this.errorMessage = 'No approved article found';
+      }
+      this.articleLoaded = true;
+    });
+    if (this.article?.status === 'SUBMITTED') {
+      this.isSubmitted = true;
+    }
+  }
+
+  // for the drop-down menü
+  loadAllApprovedArticlesByPublicIdForVersions(publicId: string, status: string): void {
+    this.articleService.getAllApprovedArticlesByPublicId(publicId, status).subscribe((articles: ArticleDto[]) => {
+        this.articles = articles;
+
+        articles.forEach(article => {
+          if (article.version != null) {
+            this.versionStatusMap.set(article.version, article.status);
+          }
+        });
+      }
+    )
+  }
+
+  loadSubmittedArticleByPublicIdAndStatus(publicId: string, status: string): void {
+    this.articleService.getSubmittedArticleByPublicId(publicId, status).pipe(
+      catchError(() => {
+        this.errorMessage = 'Error loading submitted article';
+        this.articleLoaded = true;
+        return of(undefined);
+      })
+    ).subscribe((article: ArticleDto | undefined) => {
+      if (article) {
+        this.article = article;
+        this.latestVersion = article.version;
+        this.selectedVersion = article.version;
+      } else {
+        this.errorMessage = 'No submitted article found';
+      }
+      this.isSubmitted = true;
       this.articleLoaded = true;
     });
   }
 
-  loadArticleVersionsForUserRole(publicId: string): void {
-    const user = this.storageService.getUser();
-    if (user) {
-      this.articleService.getArticleVersionsByRole(publicId, user.role).pipe(
-        catchError(error => {
-          this.errorMessage = 'Error loading article versions';
-          this.articleLoaded = true;
-          return of([]);
-        })
-      ).subscribe((versions: ArticleDto[]) => {
-        console.log(versions)
-        this.versions = versions.sort((a, b) => b.version! - a.version!);
-        if (!this.isAdmin) {
-          this.versions = this.versions.filter(version => version.status);
-        }
-        if (this.versions.length > 0) {
-          this.latestVersion = this.versions[0].version;
-          this.status = this.versions[0].status;
-          console.log(this.status);
-          if (!this.latestSubmittedArticle) {
-            this.selectedVersion = this.latestVersion;
-            this.article = this.versions[0];
-          }
-        }
-
-        this.articleLoaded = true;
-      });
-    }
-  }
 
   isArticleApproved(): boolean {
     return this.article?.status === "APPROVED";
@@ -103,27 +127,39 @@ export class ArticleDetailComponent implements OnInit {
 
   onVersionChange(version: number): void {
     this.selectedVersion = version;
-    this.article = this.versions.find(v => v.version === version);
+    this.article = this.articles.find(v => v.version === version);
   }
 
-  approveArticle(status: string): void {
+  denyArticle(publicId: string, status: string): void {
+    this.articleService.declineArticle(publicId, status).subscribe();
+    this.router.navigate(['/articles']);
+  }
+
+
+  get versionStatusArray(): { version: number; status: string }[] {
+    return Array.from(this.versionStatusMap.entries()).map(([version, status]) => ({version, status}));
+  }
+
+  approveArticle(): void {
     const user = this.storageService.getUser();
     if (user) {
-      const newVersion: number = this.latestVersion! + 1;
-      this.articleService.approveArticle(this.publicId, status, newVersion , user?.username).subscribe((article) => {
+      this.articleService.setApprovalStatus(this.publicId, this.article).subscribe((article) => {
         if (this.article) {
           this.article.status = article.status;
+          this.router.navigate(['/articles']);
         }
-      }, error => {
+      }, () => {
         this.errorMessage = 'Error approving article';
       });
     }
   }
 
-  checkAdmin(): void {
+  checkRole(): void {
     const user = this.storageService.getUser();
-    if (user) {
+    if (user?.role === 'ROLE_ADMIN') {
       this.isAdmin = user && user.role === 'ROLE_ADMIN';
+    } else {
+      this.isUser = user && user.role === 'ROLE_USER'
     }
   }
 }

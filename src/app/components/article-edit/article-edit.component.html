@@ -35,7 +35,9 @@
             </div>
           </div>
           <button mat-raised-button color="primary" type="submit" class="submit-button" [disabled]="!articleForm.valid || !hasFormChanged()">Save Article</button>
-          <button mat-raised-button color="accent" type="button" class="submit-button" [disabled]="!articleForm.valid" (click)="onSubmitArticle()">Submit Article</button>
+          <ng-container *ngIf="!isSubmitted">
+            <button mat-raised-button color="accent" type="button" class="submit-button" [disabled]="!articleForm.valid" (click)="onSubmitArticle()">Submit Article</button>
+          </ng-container>
           <button mat-raised-button color="warn" type="button" class="cancel-button" (click)="onCancel()">Cancel</button>
         </form>
       </ng-template>

@@ -14,7 +14,6 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatError} from '@angular/material/form-field';
 import {EditorComponent} from "@tinymce/tinymce-angular";
 import {StorageService} from "../../services/storage.service";
-import {ArticleDetailComponent} from "../article-detail/article-detail.component";
 
 @Component({
   selector: 'app-article-edit',
@@ -35,11 +34,15 @@ import {ArticleDetailComponent} from "../article-detail/article-detail.component
 })
 export class ArticleEditComponent implements OnInit {
   articleForm: FormGroup;
-  publicId!: string; // Anpassung hier, um publicId zu verwenden
+  publicId!: string;
+  editedBy: string | undefined;
+  version: number | undefined;
   errorMessage: string | null = null;
   articleLoaded: boolean = false;
-  private initialFormValue!: Partial<ArticleDto>;
   status!: string;
+  private initialFormValue!: Partial<ArticleDto>;
+  isEditable: boolean = false;
+  isSubmitted: boolean = false;
 
   init: EditorComponent['init'] = {
     base_url: '/tinymce',
@@ -63,30 +66,26 @@ export class ArticleEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.publicId = this.route.snapshot.params['id'];
+    this.version = Number(this.route.snapshot.params['selectedVersion']);
     this.status = this.route.snapshot.params['status'];
-    console.log(this.status);
-    if (this.status === 'APPROVED') {
-      this.loadLatestArticle();
-    }else{
-      this.loadLatestEditedArticle();
-    }
+    this.loadLatestArticle(this.publicId, this.version, this.status);
   }
 
-  loadLatestArticle(): void {
+  loadLatestArticle(publicId: string, version: number, status: string): void {
     const user = this.storageService.getUser();
     if (user) {
-      this.articleService.getLatestArticleByPublicIdAndStatus(this.publicId).pipe(
-        catchError(error => {
+      this.articleService.getArticleByPublicIdAndVersion(publicId, version, status).pipe(
+        catchError(() => {
           this.errorMessage = 'ID of Article not found';
           this.articleLoaded = true;
           return of(null);
         })
-      ).subscribe((data: ArticleDto | null) => {
+      ).subscribe((data) => {
         if (data) {
-          console.log(data);
+          this.editedBy = data.editedBy;
+          this.isSubmitted = data.isSubmitted;
           this.articleForm.patchValue(data);
           this.initialFormValue = {...this.articleForm.value};
-          console.log(this.initialFormValue);
         } else {
           this.errorMessage = 'ID of Article not found';
         }
@@ -94,52 +93,57 @@ export class ArticleEditComponent implements OnInit {
       });
     }
   }
-
-  loadLatestEditedArticle(): void {
-    const user = this.storageService.getUser();
-    if (user) {
-      this.articleService.getLatestArticleByPublicIdAndStatusAndEditedBy(this.publicId, user.username).pipe(
-        catchError(error => {
-          this.errorMessage = 'ID of Article not found';
-          this.articleLoaded = true;
-          return of(null);
-        })
-      ).subscribe((data: ArticleDto | null) => {
-        if (data) {
-          console.log(data);
-          this.articleForm.patchValue(data);
-          this.initialFormValue = {...this.articleForm.value};
-          console.log(this.initialFormValue);
-        } else {
-          this.errorMessage = 'ID of Article not found';
-        }
-        this.articleLoaded = true;
-      });
-    }
-  }
+  //
+  // loadLatestEditedArticle(): void {
+  //   const user = this.storageService.getUser();
+  //   if (user) {
+  //     this.articleService.getLatestArticleByPublicIdAndStatusAndEditedBy(this.publicId, user.username).pipe(
+  //       catchError(error => {
+  //         this.errorMessage = 'ID of Article not found';
+  //         this.articleLoaded = true;
+  //         return of(null);
+  //       })
+  //     ).subscribe((data: ArticleDto | null) => {
+  //       console.log(data)
+  //       if (data) {
+  //         this.articleForm.patchValue(data);
+  //         this.initialFormValue = {...this.articleForm.value};
+  //       } else {
+  //         this.errorMessage = 'ID of Article not found';
+  //       }
+  //       this.articleLoaded = true;
+  //     });
+  //   }
+  // }
 
   hasFormChanged(): boolean {
     return JSON.stringify(this.initialFormValue) !== JSON.stringify(this.articleForm.value);
   }
 
+  // saving Article
   onSubmit(): void {
     const user = this.storageService.getUser();
     if (user && this.articleForm.valid) {
 
-      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: "EDITING"}; // Ensure publicId is included
-      console.log(updatedArticle);
-      this.articleService.updateArticle(this.publicId, user.username, updatedArticle).subscribe(() => {
+      this.editedBy = user.username;
+
+      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: this.status, isEditable: false, editedBy: this.editedBy, version: this.version, isSubmitted: this.isSubmitted};
+      this.articleService.updateArticle(this.publicId, updatedArticle, this.editedBy, this.version, false).subscribe(() => {
         this.router.navigate(['/user-dashboard']);
       });
     }
   }
 
+  // Submitting Article
   onSubmitArticle(): void {
     const user = this.storageService.getUser();
 
+
     if (user && this.articleForm.valid) {
-      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: 'SUBMITTED'}; // Ensure status is set to SUBMITTED
-      this.articleService.updateArticle(this.publicId, user.username, updatedArticle).subscribe(() => {
+      this.editedBy = user.username;
+
+      const updatedArticle: ArticleDto = {...this.articleForm.value, publicId: this.publicId, status: 'SUBMITTED', editedBy: this.editedBy, version: this.version, isSubmitted: this.isSubmitted};
+      this.articleService.setSubmitStatus(updatedArticle.editedBy, updatedArticle).subscribe(() => {
         this.router.navigate(['/articles']);
       });
     }

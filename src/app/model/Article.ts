@@ -7,4 +7,7 @@ export interface ArticleDto {
   status: string;
   editedBy?: string;
   versions?: ArticleDto[];
+  isEditable: boolean;
+  isSubmitted: boolean;
 }
+

@@ -5,6 +5,7 @@
     </mat-card-content>
   </mat-card>
 </div>
+
 <div class="article-detail-container" *ngIf="articleLoaded">
   <mat-card class="article-content">
     <mat-card-content>
@@ -17,36 +18,47 @@
           <h3>{{ article.description }}</h3>
           <div [innerHTML]="article.content"></div>
         </div>
-<!--        <h2>Submitted Article</h2>-->
-<!--        <div *ngIf="isAdmin && latestSubmittedArticle">-->
-<!--          <h3>{{ latestSubmittedArticle.title }}</h3>-->
-<!--          <h3>{{ latestSubmittedArticle.description }}</h3>-->
-<!--          <div [innerHTML]="latestSubmittedArticle.content"></div>-->
-<!--        </div>-->
       </ng-template>
     </mat-card-content>
   </mat-card>
+
   <div class="article-actions">
     <mat-card class="actions-card">
       <mat-card-content>
-        <mat-form-field appearance="fill" class="version-select">
-          <mat-label>Version</mat-label>
-          <mat-select [(value)]="selectedVersion" (selectionChange)="onVersionChange($event.value)">
-            <mat-option *ngFor="let version of versions" [value]="version.version">
-              Version {{ version.version }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <button mat-raised-button color="primary" *ngIf="selectedVersion === latestVersion && !latestSubmittedArticle" [routerLink]="['/articles/edit', publicId, status]">Edit</button>
+        <ng-container *ngIf="!isSubmitted">
+          <mat-form-field appearance="fill" class="version-select">
+            <mat-label>Version</mat-label>
+            <mat-select [(value)]="selectedVersion" (selectionChange)="onVersionChange($event.value)">
+              <mat-option *ngFor="let article of articles" [value]="article.version">
+                Version {{ article.version }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngFor="let article of articles">
+          <button *ngIf="article.version === selectedVersion && article.isEditable" mat-raised-button color="primary"
+                  [routerLink]="['/articles/edit', article.publicId, selectedVersion, status]">
+            Edit
+          </button>
+        </ng-container>
         <ng-container *ngIf="isAdmin && (selectedVersion === latestVersion || latestSubmittedArticle)">
-          <ng-container *ngIf="!isArticleApproved(); else approvedTemplate">
-            <button mat-raised-button color="accent" (click)="approveArticle('APPROVED')">Approve</button>
-            <button mat-raised-button color="accent" (click)="approveArticle('EDITING')">Deny</button>
+          <ng-container *ngIf="!isArticleApproved()">
+            <button mat-raised-button color="accent" (click)="approveArticle()">Approve</button>
+            <button mat-raised-button color="accent" (click)="denyArticle(publicId, status)">Deny</button>
             <span class="not-approved-label">Not Approved</span>
           </ng-container>
-          <ng-template #approvedTemplate>
-            <div class="approved-label">Approved</div>
-          </ng-template>
+        </ng-container>
+        <ng-container *ngFor="let entry of versionStatusArray">
+          <ng-container *ngIf="entry.version === selectedVersion">
+            <ng-container *ngIf="entry.status === 'APPROVED'">
+              <div class="approved-label">{{ entry.status }}</div>
+              <div class="edited-by">Edited by: {{article?.editedBy}}</div>
+            </ng-container>
+            <ng-container *ngIf="entry.status === 'DECLINED'">
+              <div class="declined-label">{{ entry.status }}</div>
+              <div class="edited-by"> Edited by: {{article?.editedBy}}</div>
+            </ng-container>
+          </ng-container>
         </ng-container>
       </mat-card-content>
     </mat-card>

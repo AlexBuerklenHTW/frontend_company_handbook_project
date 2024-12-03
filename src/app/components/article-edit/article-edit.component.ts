@@ -41,7 +41,6 @@ export class ArticleEditComponent implements OnInit {
   articleLoaded: boolean = false;
   status!: string;
   private initialFormValue!: Partial<ArticleDto>;
-  isEditable: boolean = false;
   isSubmitted: boolean = false;
 
   init: EditorComponent['init'] = {
@@ -93,28 +92,6 @@ export class ArticleEditComponent implements OnInit {
       });
     }
   }
-  //
-  // loadLatestEditedArticle(): void {
-  //   const user = this.storageService.getUser();
-  //   if (user) {
-  //     this.articleService.getLatestArticleByPublicIdAndStatusAndEditedBy(this.publicId, user.username).pipe(
-  //       catchError(error => {
-  //         this.errorMessage = 'ID of Article not found';
-  //         this.articleLoaded = true;
-  //         return of(null);
-  //       })
-  //     ).subscribe((data: ArticleDto | null) => {
-  //       console.log(data)
-  //       if (data) {
-  //         this.articleForm.patchValue(data);
-  //         this.initialFormValue = {...this.articleForm.value};
-  //       } else {
-  //         this.errorMessage = 'ID of Article not found';
-  //       }
-  //       this.articleLoaded = true;
-  //     });
-  //   }
-  // }
 
   hasFormChanged(): boolean {
     return JSON.stringify(this.initialFormValue) !== JSON.stringify(this.articleForm.value);

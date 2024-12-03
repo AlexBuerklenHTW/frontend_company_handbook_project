@@ -27,7 +27,7 @@ export class AuthService {
   login(username: string, password: string): Observable<string> {
     const options = {
       headers: new HttpHeaders({'Content-Type': 'application/json'}),
-      responseType: 'text' as 'json'  // <-- Hier wird 'text' als 'json' getarnt
+      responseType: 'text' as 'json'
     };
     return this.http.post<string>(this.authUrl, { username, password }, options).pipe(
       tap(token => {

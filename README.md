@@ -1,27 +1,20 @@
-# Unternehmenshandbuch
+# Company Handbook
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.8.
+## This frontend is part of a project for a company handbook. Core features are:
+- creating articles
+- editing articles
+- rudimentary login/register functionality with spring security 
+- viewing articles with different versions
+- workflow for approving/denying articles
+- role based access to certain features, e.g. a non-admin can create and edit articles, while an admin can do the same, but has the ability to approve/deny articles
+- rich text editor (tinyMCE) for formatting text
 
-## Development server
+# Link to Backend:  https://github.com/AlexBuerklenHTW/backend_company_handbook_project
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Build the project
 
-## Code scaffolding
+[Angular CLI](https://github.com/angular/angular-cli) version 17.3.8.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+1. Run `npm install` in the root directory
+2. Run `ng serve --open` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.

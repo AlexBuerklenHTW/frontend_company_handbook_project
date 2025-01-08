@@ -14,7 +14,12 @@
 ## Build the project
 
 [Angular CLI](https://github.com/angular/angular-cli) version 17.3.8.
-
-1. Run `npm install` in the root directory
-2. Run `ng serve --open` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+1. Run **npm install** in the root directory
+```shell
+npm install
+```
+2. Run **ng serve --open** to open a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+```shell
+ng serve --open
+```
 

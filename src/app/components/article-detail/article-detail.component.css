@@ -3,6 +3,11 @@
   height: auto;
 }
 
+.approve-button {
+  background-color: green;
+  color: white;
+}
+
 .approved-label {
   background-color: #4CAF50;
   color: white;
@@ -43,6 +48,10 @@ button {
   border-radius: 4px;
   display: inline-block;
   margin-left: 10px;
+}
+
+.deny-button{
+  padding: 10px;
 }
 
 .edited-by {

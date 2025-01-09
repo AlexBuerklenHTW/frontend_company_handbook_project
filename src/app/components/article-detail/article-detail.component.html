@@ -43,9 +43,10 @@
         </ng-container>
         <ng-container *ngIf="isAdmin && (selectedVersion === latestVersion || latestSubmittedArticle)">
           <ng-container *ngIf="!isArticleApproved()">
-            <button mat-raised-button color="accent" (click)="approveArticle()">Approve</button>
-            <button mat-raised-button color="accent" (click)="denyArticle(publicId, status)">Deny</button>
-            <span class="not-approved-label">Not Approved</span>
+            <button mat-raised-button class="approve-button" (click)="approveArticle()">Approve</button>
+            <span class="deny-button">
+              <button mat-raised-button color="warn" (click)="denyArticle(publicId, status)">Deny</button>
+            </span>
           </ng-container>
         </ng-container>
         <ng-container *ngFor="let entry of versionStatusArray">

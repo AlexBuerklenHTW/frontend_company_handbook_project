@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ArticleService } from "../../services/article.service";
-import { ArticleDto } from "../../model/Article";
+import { ArticleDto } from "../../model/ArticleDto";
 import { RouterLink } from "@angular/router";
 import { NgForOf, NgIf } from "@angular/common";
 import { MatTableModule } from '@angular/material/table';

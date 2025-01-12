@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {ArticleDto} from "../model/Article";
+import {ArticleDto} from "../model/ArticleDto";
+import {ArticleStatusEditingAndVersionDto} from "../model/ArticleStatusEditingAndVersionDto";
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,10 @@ export class ArticleService {
   createArticle(username: string | undefined, articleDto: ArticleDto): Observable<ArticleDto> {
     articleDto.editedBy = username;
     return this.http.post<ArticleDto>(`${this.apiUrl}`, articleDto);
+  }
+
+  getEditedByWithStatusEditing(publicId: string): Observable<ArticleStatusEditingAndVersionDto> {
+    return this.http.get<ArticleStatusEditingAndVersionDto>(`${this.apiUrl}/editedByWithStatusEditing/${publicId}`);
   }
 
   setSubmitStatus(username: string | undefined, articleDto: ArticleDto): Observable<ArticleDto> {

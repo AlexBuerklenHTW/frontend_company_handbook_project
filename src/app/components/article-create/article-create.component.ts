@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 import {catchError} from 'rxjs/operators';
 import {of} from 'rxjs';
 import {ArticleService} from '../../services/article.service';
-import {ArticleDto} from '../../model/Article';
+import {ArticleDto} from '../../model/ArticleDto';
 import {MatCard, MatCardContent} from "@angular/material/card";
 import {NgIf} from "@angular/common";
 import {MatError, MatFormField, MatLabel} from "@angular/material/form-field";

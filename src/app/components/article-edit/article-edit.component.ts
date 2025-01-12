@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ArticleService} from "../../services/article.service";
-import {ArticleDto} from "../../model/Article";
+import {ArticleDto} from "../../model/ArticleDto";
 import {catchError} from 'rxjs/operators';
 import {of} from 'rxjs';
 import {NgIf} from "@angular/common";

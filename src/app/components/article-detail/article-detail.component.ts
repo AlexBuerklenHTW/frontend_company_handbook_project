@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {ArticleDto} from "../../model/Article";
+import {ArticleDto} from "../../model/ArticleDto";
 import {ArticleService} from "../../services/article.service";
 import {NgIf, NgFor} from "@angular/common";
 import {catchError} from 'rxjs/operators';
@@ -10,6 +10,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatSelectModule} from '@angular/material/select';
 import {MatOptionModule} from '@angular/material/core';
 import {StorageService} from "../../services/storage.service";
+import {ArticleStatusEditingAndVersionDto} from "../../model/ArticleStatusEditingAndVersionDto";
 
 @Component({
   selector: 'app-article-detail',
@@ -41,6 +42,7 @@ export class ArticleDetailComponent implements OnInit {
   isUser: null | boolean = false;
   isSubmitted: boolean = false;
   versionStatusMap = new Map<number, string>();
+  editedByWithStatusEditingAndVersion: ArticleStatusEditingAndVersionDto | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -57,10 +59,28 @@ export class ArticleDetailComponent implements OnInit {
     if (this.status === 'APPROVED') {
       this.loadApprovedArticleByPublicIdAndLastVersion(this.publicId);
       this.loadAllApprovedArticlesByPublicIdForVersions(this.publicId, this.status);
+      this.loadEditedByWithStatusEditing(this.publicId);
     }
     if (this.status === 'SUBMITTED') {
       this.loadSubmittedArticleByPublicIdAndStatus(this.publicId, this.status)
     }
+  }
+
+  // Loads current editor of the article with the corresponding version, if someone is editing this article.
+  // If not, the backend responses with "null" and the method stops at the if-statement.
+  loadEditedByWithStatusEditing(publicId: string): void {
+    this.articleService.getEditedByWithStatusEditing(publicId).pipe(
+      catchError(() => {
+        this.errorMessage = 'Error loading edited by with status editing'
+        this.articleLoaded = true;
+        return of(undefined);
+      })
+    ).subscribe((editedByWithStatusEditingAndVersion: ArticleStatusEditingAndVersionDto | undefined) => {
+        if (editedByWithStatusEditingAndVersion) {
+          this.editedByWithStatusEditingAndVersion = editedByWithStatusEditingAndVersion;
+        }
+      }
+    )
   }
 
   // load details of article, when approved
@@ -134,7 +154,6 @@ export class ArticleDetailComponent implements OnInit {
     this.articleService.declineArticle(publicId, status).subscribe();
     this.router.navigate(['/articles']);
   }
-
 
   get versionStatusArray(): { version: number; status: string }[] {
     return Array.from(this.versionStatusMap.entries()).map(([version, status]) => ({version, status}));

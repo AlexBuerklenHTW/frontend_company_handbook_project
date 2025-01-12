@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import {ArticleService} from "../../services/article.service";
-import {ArticleDto} from "../../model/Article";
+import {ArticleDto} from "../../model/ArticleDto";
 import {catchError} from 'rxjs/operators';
 import {of} from 'rxjs';
 import {MatCardModule} from '@angular/material/card';

@@ -34,12 +34,14 @@ import {StorageService} from "../../services/storage.service";
 })
 export class ArticleEditComponent implements OnInit {
   articleForm: FormGroup;
-  publicId!: string;
+  denyText: string | undefined;
+  publicId: string = '';
   editedBy: string | undefined;
   version: number | undefined;
   errorMessage: string | null = null;
+  isDenyTextVisible = false;
   articleLoaded: boolean = false;
-  status!: string;
+  status: string = '';
   private initialFormValue!: Partial<ArticleDto>;
   isSubmitted: boolean = false;
 
@@ -73,7 +75,7 @@ export class ArticleEditComponent implements OnInit {
   loadLatestArticle(publicId: string, version: number, status: string): void {
     const user = this.storageService.getUser();
     if (user) {
-      this.articleService.getArticleByPublicIdAndVersion(publicId, version, status).pipe(
+      this.articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version, status).pipe(
         catchError(() => {
           this.errorMessage = 'ID of Article not found';
           this.articleLoaded = true;
@@ -81,6 +83,7 @@ export class ArticleEditComponent implements OnInit {
         })
       ).subscribe((data) => {
         if (data) {
+          this.denyText = data.denyText;
           this.editedBy = data.editedBy;
           this.isSubmitted = data.isSubmitted;
           this.articleForm.patchValue(data);
@@ -95,6 +98,10 @@ export class ArticleEditComponent implements OnInit {
 
   hasFormChanged(): boolean {
     return JSON.stringify(this.initialFormValue) !== JSON.stringify(this.articleForm.value);
+  }
+
+  toggleDenyText(): void {
+    this.isDenyTextVisible = !this.isDenyTextVisible;
   }
 
   // saving Article

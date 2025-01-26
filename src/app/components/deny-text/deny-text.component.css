@@ -1,0 +1,14 @@
+.modal {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+}
+
+.form {
+  width: 100vh;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin: 0 auto;
+}
+

@@ -5,42 +5,51 @@
     </mat-card-content>
   </mat-card>
 </div>
-<div class="article-edit-container" *ngIf="articleLoaded">
-  <mat-card class="article-content">
-    <mat-card-content>
-      <div *ngIf="errorMessage; else formTemplate">
-        <p class="error-message">{{ errorMessage }}</p>
-      </div>
-      <ng-template #formTemplate>
-        <form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
-          <mat-form-field appearance="fill" class="form-field">
-            <mat-label>Title</mat-label>
-            <input matInput id="title" formControlName="title">
-            <mat-error *ngIf="articleForm.controls['title'].invalid && articleForm.controls['title'].touched">
-              Title is required.
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="fill" class="form-field">
-            <mat-label>Description</mat-label>
-            <textarea matInput id="description" formControlName="description"></textarea>
-            <mat-error *ngIf="articleForm.controls['description'].invalid && articleForm.controls['description'].touched">
-              Description is required.
-            </mat-error>
-          </mat-form-field>
-          <div class="form-field">
-            <mat-label>Content</mat-label>
-            <editor id="content" formControlName="content" [init]="init"></editor>
-            <div *ngIf="articleForm.controls['content'].invalid && articleForm.controls['content'].touched" class="error-message">
-              Content is required.
+<div class="article-wrapper" *ngIf="articleLoaded">
+  <div class="main-content">
+    <mat-card class="article-content">
+      <mat-card-content>
+        <div *ngIf="errorMessage; else formTemplate">
+          <p class="error-message">{{ errorMessage }}</p>
+        </div>
+        <ng-template #formTemplate>
+          <form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="fill" class="form-field">
+              <mat-label>Title</mat-label>
+              <input matInput id="title" formControlName="title">
+              <mat-error *ngIf="articleForm.controls['title'].invalid && articleForm.controls['title'].touched">
+                Title is required.
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="form-field">
+              <mat-label>Description</mat-label>
+              <textarea matInput id="description" formControlName="description"></textarea>
+              <mat-error *ngIf="articleForm.controls['description'].invalid && articleForm.controls['description'].touched">
+                Description is required.
+              </mat-error>
+            </mat-form-field>
+            <div class="form-field">
+              <mat-label>Content</mat-label>
+              <editor id="content" formControlName="content" [init]="init"></editor>
+              <div *ngIf="articleForm.controls['content'].invalid && articleForm.controls['content'].touched" class="error-message">
+                Content is required.
+              </div>
             </div>
-          </div>
-          <button mat-raised-button color="primary" type="submit" class="submit-button" [disabled]="!articleForm.valid || !hasFormChanged()">Save Article</button>
-          <ng-container *ngIf="status === 'EDITING'">
-            <button mat-raised-button color="accent" type="button" class="submit-button" [disabled]="!articleForm.valid" (click)="onSubmitArticle()">Submit Article</button>
-          </ng-container>
-          <button mat-raised-button color="warn" type="button" class="cancel-button" (click)="onCancel()">Cancel</button>
-        </form>
-      </ng-template>
-    </mat-card-content>
-  </mat-card>
+            <button mat-raised-button color="primary" type="submit" class="submit-button" [disabled]="!articleForm.valid || !hasFormChanged()">Save Article</button>
+            <ng-container *ngIf="status === 'EDITING'">
+              <button mat-raised-button color="accent" type="button" class="submit-button" [disabled]="!articleForm.valid" (click)="onSubmitArticle()">Submit Article</button>
+              <ng-container *ngIf="denyText">
+                <button mat-raised-button color="accent" type="button" class="deny-text-button" (click)="toggleDenyText()">Show Deny Text</button>
+              </ng-container>
+            </ng-container>
+            <button mat-raised-button color="warn" type="button" class="cancel-button" (click)="onCancel()">Cancel</button>
+          </form>
+        </ng-template>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div *ngIf="isDenyTextVisible" class="deny-text-container">
+    <h1>Amendment Proposal</h1>
+    <p>{{ denyText }}</p>
+  </div>
 </div>

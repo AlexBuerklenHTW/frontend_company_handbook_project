@@ -14,7 +14,9 @@ export class ArticleService {
   }
 
   createArticle(username: string | undefined, articleDto: ArticleDto): Observable<ArticleDto> {
-    articleDto.editedBy = username;
+    if (username != null) {
+      articleDto.editedBy = username;
+    }
     return this.http.post<ArticleDto>(`${this.apiUrl}`, articleDto);
   }
 
@@ -23,7 +25,9 @@ export class ArticleService {
   }
 
   setSubmitStatus(username: string | undefined, articleDto: ArticleDto): Observable<ArticleDto> {
-    articleDto.editedBy = username;
+    if (username != null) {
+      articleDto.editedBy = username;
+    }
     return this.http.post<ArticleDto>(`${this.apiUrl}/submitting`, articleDto);
   }
 
@@ -44,8 +48,8 @@ export class ArticleService {
   }
 
   updateArticle(publicId: string, articleDto: ArticleDto | undefined, editedBy?: string, version?: number, isEditable?: boolean): Observable<ArticleDto> {
-    if (articleDto) {
-      articleDto.editedBy = editedBy;
+    if (articleDto && editedBy != null) {
+        articleDto.editedBy = editedBy;
     }
 
     let params = new HttpParams();
@@ -60,12 +64,12 @@ export class ArticleService {
     return this.http.post<ArticleDto>(`${this.apiUrl}/approval/${publicId}`, articleDto);
   }
 
-  getArticleByPublicIdAndVersion(publicId: string, version: number, status: string): Observable<ArticleDto> {
+  getArticleByPublicIdAndVersionAndStatus(publicId: string, version: number, status: string): Observable<ArticleDto> {
     return this.http.get<ArticleDto>(`${this.apiUrl}/${publicId}/version/${version}/${status}`);
   }
 
-  declineArticle(publicId: string, status: string) {
-    return this.http.post<ArticleDto>(`${this.apiUrl}/decline/${publicId}/${status}`, {});
+  declineArticle(publicId: string, status: string, denyText: string) {
+    return this.http.post<ArticleDto>(`${this.apiUrl}/decline/${publicId}/${status}/${denyText}`, {});
   }
 
   getArticlesApproved(): Observable<ArticleDto[]> {

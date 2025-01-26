@@ -1,13 +1,14 @@
 export interface ArticleDto {
-  publicId?: string;
+  publicId: string;
   title: string;
   description: string;
   content: string;
-  version?: number;
+  version: number;
   status: string;
-  editedBy?: string;
-  versions?: ArticleDto[];
+  editedBy: string;
+  versions: ArticleDto[];
   isEditable: boolean;
   isSubmitted: boolean;
+  denyText?: string;
 }
 

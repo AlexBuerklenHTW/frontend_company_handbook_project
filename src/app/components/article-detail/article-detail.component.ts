@@ -6,11 +6,13 @@ import {NgIf, NgFor} from "@angular/common";
 import {catchError} from 'rxjs/operators';
 import {of} from 'rxjs';
 import {MatCardModule} from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSelectModule} from '@angular/material/select';
 import {MatOptionModule} from '@angular/material/core';
 import {StorageService} from "../../services/storage.service";
 import {ArticleStatusEditingAndVersionDto} from "../../model/ArticleStatusEditingAndVersionDto";
+import {DenyTextComponent} from "../deny-text/deny-text.component";
 
 @Component({
   selector: 'app-article-detail',
@@ -49,6 +51,7 @@ export class ArticleDetailComponent implements OnInit {
     private articleService: ArticleService,
     private storageService: StorageService,
     private router: Router,
+    private dialog: MatDialog
   ) {
   }
 
@@ -151,8 +154,15 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   denyArticle(publicId: string, status: string): void {
-    this.articleService.declineArticle(publicId, status).subscribe();
-    this.router.navigate(['/articles']);
+    const dialogRef = this.dialog.open(DenyTextComponent);
+
+    dialogRef.afterClosed().subscribe((denyText: string) => {
+      if (denyText) {
+        this.articleService.declineArticle(publicId, status, denyText).subscribe(() => {
+          this.router.navigate(['/articles']);
+        });
+      }
+    });
   }
 
   get versionStatusArray(): { version: number; status: string }[] {

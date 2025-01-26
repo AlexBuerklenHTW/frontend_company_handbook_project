@@ -1,0 +1,12 @@
+<div class="modal">
+  <div class="form">
+    <h1>What should be changed?</h1>
+    <form [formGroup]="denyTextForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="fill" class="form">
+        <mat-label>Your text</mat-label>
+        <textarea matInput formControlName="denyText"></textarea>
+      </mat-form-field>
+      <button mat-raised-button color="primary" [disabled]="denyTextForm.invalid">Send</button>
+    </form>
+  </div>
+</div>

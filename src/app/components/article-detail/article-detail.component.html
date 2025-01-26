@@ -53,9 +53,11 @@
           <ng-container *ngIf="entry.version === selectedVersion">
             <ng-container *ngIf="entry.status === 'APPROVED'">
               <div class="approved-label">{{ entry.status }}</div>
-              <div class="edited-by">Edited by: {{article?.editedBy}}</div>
+              <div class="edited-by">Edited by: {{ article?.editedBy }}</div>
               <ng-container *ngIf="editedByWithStatusEditingAndVersion">
-                <div class="currently-editing">{{ editedByWithStatusEditingAndVersion.editedBy }} is currently editing version {{ editedByWithStatusEditingAndVersion.version }} of this article</div>
+                <div class="currently-editing">{{ editedByWithStatusEditingAndVersion.editedBy }} is currently editing
+                  version {{ editedByWithStatusEditingAndVersion.version }} of this article
+                </div>
               </ng-container>
             </ng-container>
           </ng-container>
